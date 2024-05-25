@@ -5,26 +5,26 @@ const jwt = require('jsonwebtoken')
 
 router.post('/signup', async (req, res) => {
     try {
-            const newUser = new userRegister({
-                name: req.body.name,
-                email: req.body.email,
-                rollno: req.body.rollno,
-                address: req.body.address,
-                password: req.body.password,
-                confirmPassword: req.body.confirmPassword,
-                role: req.body.role,
-            })
-            const isPasswordMatch = newUser.password == newUser.confirmPassword;
-            if (!isPasswordMatch) {
-                console.log(error);
-                return res.json({ message: 'password doesnot match' })
-            }
-            await newUser.save()
-            res.json({ message: 'Register Sucessfull ' })
+        const newUser = new userRegister({
+            name: req.body.name,
+            email: req.body.email,
+            rollno: req.body.rollno,
+            address: req.body.address,
+            password: req.body.password,
+            confirmPassword: req.body.confirmPassword,
+            role: req.body.role,
+        })
+        const isPasswordMatch = newUser.password == newUser.confirmPassword;
+        if (!isPasswordMatch) {
+            console.log(error);
+            return res.json({ message: 'password doesnot match' })
         }
-        catch (error) {
-            res.json({ messgae: 'something is error', error })
-        }
+        await newUser.save()
+        res.json({ message: 'Register Sucessfull ' })
+    }
+    catch (error) {
+        res.json({ messgae: 'something is error', error })
+    }
 })
 
 router.get('/getUserData', async (req, res) => {
@@ -33,29 +33,34 @@ router.get('/getUserData', async (req, res) => {
 })
 
 
-router.post('/signin', async (req,res)=>{
-    try{
+router.post('/signin', async (req, res) => {
+    try {
         const { email, password } = req.body;
         const userData = await userRegister.findOne({ email });
 
 
-        if(!userData){
+        if (!userData) {
             console.log(error);
-            return res.json({message:'username is not found '});
+            return res.json({ message: 'username is not found ' });
         }
         const userPasswordMatch = password === userData.password;
-        if(!userPasswordMatch){
+        if (!userPasswordMatch) {
             console.log('password doesnot match ');
-            return res.json({message:'password is incorrect'});
+            return res.json({ message: 'password is incorrect' });
         }
-        const userRole= userData.role;
-        const token =jwt.sign({email:userData.email},'secretKey')
-        res.json({message:'Login Sucessfull', role:userRole,token:token});
+        const userRole = userData.role;
+        const token = jwt.sign({ email: userData.email }, 'secretKey')
+        res.json({ message: 'Login Sucessfull', role: userRole, token: token });
     }
-    catch(error){
-         res.json({message:'something went wrong',error});
+    catch (error) {
+        res.json({ message: 'something went wrong', error });
 
     }
+})
+
+router.get('/userdata', async (req, res) => {
+    const userData = await userRegister.find();
+    res.json({ userData: userData })
 })
 
 

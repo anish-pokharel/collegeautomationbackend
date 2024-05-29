@@ -8,7 +8,7 @@ router.post('/signup', async (req, res) => {
         const newUser = new userRegister({
             name: req.body.name,
             email: req.body.email,
-            rollno: req.body.rollno,
+            // rollno: req.body.rollno,
             address: req.body.address,
             password: req.body.password,
             confirmPassword: req.body.confirmPassword,

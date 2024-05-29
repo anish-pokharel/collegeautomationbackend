@@ -9,9 +9,7 @@ const addClubSchema = new mongoose.Schema({
         enum:['political','non-political'],
         default:'non-political'
     },
-    clubName:{type:String,
-        enum:['NOSK','ROBOTIC','ANNFSU','NSU']
-    },
+    clubName:{type:String},
     position:{type:String},
     reason:{ type: String, require},
     joinedDate:{type: String}

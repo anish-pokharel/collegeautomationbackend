@@ -6,7 +6,7 @@ const userRoutes= require('./routes/userRoute')
 const discussion= require('./routes/discussionRoutes')
 const joinClub= require('./routes/joinClubRoutes')
 const sponsorShip= require('./routes/sponsorshipRoutes')
-
+const addUser=require('./routes/attendanceRoutes')
 
 
 app.use(express.json());
@@ -15,6 +15,7 @@ app.use(userRoutes);
 app.use(discussion);
 app.use(joinClub);
 app.use(sponsorShip);
+app.use(addUser);
 app.listen(3200,()=>{
     console.log('LocalHost is connected');
 })

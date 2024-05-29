@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 function verifyToken(req,res,next){
-    if(!req.headers.authoriation){
+    if(!req.headers.authorization){
         res.json({message:'unauthorization request 1'})
     }
     let token = req.headers.authorization.split(' ')[1]

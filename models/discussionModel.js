@@ -1,7 +1,7 @@
 const mongoose= require('mongoose');
 
 const DiscussionSchema= new mongoose.Schema({
-    discussion_topic:{type: String, require},
+    discussion_topic:{type: String, required: true},
     date:{type:Date}, 
     decision_By:{type:String},
     decision:{type:String}

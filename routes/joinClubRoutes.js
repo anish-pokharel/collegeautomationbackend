@@ -6,16 +6,15 @@ const JoinClub = require('../models/joinClubModel');
 
 router.post('/joinclub', async (req, res) => {
     try {
-        const newClub = new JoinClub({
+        const newjoinClub = new JoinClub({
           
             clubStatus: req.body.clubStatus,
             clubName: req.body.clubName,
-            position:req.body.position,
             reason: req.body.reason,
             createdDate:Date.now()
         });
        
-        await newClub.save();
+        await newjoinClub.save();
         res.json({ message: 'New Club Joined sucessfully ' });
     }
     catch (error) {

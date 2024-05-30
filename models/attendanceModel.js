@@ -1,9 +1,7 @@
 const mongoose= require('mongoose');
 
 const AttendanceSchema= new mongoose.Schema({
-    Name:{type: String, require},
-    Program:{type:String}, 
-    Semester:{type:String},
+    Name:{type: String, required:true},
     Rollno:{type:Number},
     Subject:{type: String},
     Date:{type: Date},

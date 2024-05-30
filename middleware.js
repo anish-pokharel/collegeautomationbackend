@@ -7,7 +7,7 @@ function verifyToken(req,res,next){
     if(token===''){
         res.json({message:'token is empty '})
     }
-    let payload = jwt.verify(token,'secretkey')
+    let payload = jwt.verify(token,'secretKey')
     if(!payload) {
         res.json({message:'unauthorized request3'})
     }

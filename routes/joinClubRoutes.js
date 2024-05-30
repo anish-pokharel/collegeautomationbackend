@@ -7,14 +7,12 @@ const JoinClub = require('../models/joinClubModel');
 router.post('/joinclub', async (req, res) => {
     try {
         const newClub = new JoinClub({
-            name: req.discussion_topic,
-            program:req.discussion,
-            semester:req.semester,
+          
             clubStatus: req.body.clubStatus,
             clubName: req.body.clubName,
             position:req.body.position,
             reason: req.body.reason,
-            joinedDate:Date.now()
+            createdDate:Date.now()
         });
        
         await newClub.save();

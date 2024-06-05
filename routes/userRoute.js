@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const userRegister = require('../models/signupModel');
 const jwt = require('jsonwebtoken');
+const verifyToken=require('../middleware');
 
 router.post('/signup', async (req, res) => {
     try {
@@ -27,10 +28,10 @@ router.post('/signup', async (req, res) => {
     }
 })
 
-router.get('/getUserData', async (req, res) => {
-    const userData = await userRegister.find();
-    res.json({ userData: userData });
-})
+// router.get('/getUserData', async (req, res) => {
+//     const userData = await userRegister.find();
+//     res.json({ userData: userData });
+// })
 
 
 router.post('/signin', async (req, res) => {
@@ -62,8 +63,22 @@ router.get('/userdata', async (req, res) => {
     const userData = await userRegister.find();
     res.json({ userData: userData });
 })
+ 
 
 
-
-
+router.get('/getuserdata', verifyToken, async (req, res) =>{
+    try{
+            const { email } = req;
+            const userdata= await userRegister.findOne({email});
+            if(userdata){
+                return res.json({ data: userdata });
+            }
+            else{
+                res.status(404).json({message: "data not found"});
+            }
+    }catch(error)
+    {
+        res.status(500).json({ messgae: 'something is error', error });
+    }
+})
 module.exports = router;

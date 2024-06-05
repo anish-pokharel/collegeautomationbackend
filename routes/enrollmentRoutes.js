@@ -29,26 +29,6 @@ router.get('/enrollmentData',verifyToken, async (req, res) => {
   }
 });
 
-// router.post('/postEnrollmentKeyForm', verifyToken,async (req, res) => {
-//   try {
-//     const { enrollment_key } = req.body;
-//     const findEnrollmentKey = await Enrollment.findOne({ enrollment_key })
-//     if (!findEnrollmentKey) {
-//        res.json({ message: 'Enrollment key is not found' });
-//       console.log( 'Enrollment key is not found');
-//     }
-//     console.log('Associated Subjects:', findEnrollmentKey.subjects);
-//     const userSubjects = new UserSubjects({
-//       userId: userId,
-//       subjects: findEnrollmentKey.subjects,
-//     });
-//     await userSubjects.save();
-//      res.json({ matchEnrollmentKey: true ,message: 'Enrollment key is found', subjects: findEnrollmentKey.subjects });
-//   }
-//   catch(error){
-//    console.log('Something went wrong'); 
-//   }
-// });
 
 
 
@@ -57,7 +37,7 @@ router.post('/postEnrollmentKeyForm', verifyToken, async (req, res) => {
     const { enrollment_key } = req.body;
     // const userId = req.userId ? req.userId.id : null; 
     // const userId = req.userId;
-  
+    // const userData =verifyToken.req.userId
     console.log(userData);
     // if (!userId) {
     //   return res.status(400).json({ message: 'User ID not found' });

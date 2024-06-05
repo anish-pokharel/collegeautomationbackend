@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-
+const verifyToken=require('../middleware')
 const JoinClub = require('../models/joinClubModel');
 
 
-router.post('/joinclub', async (req, res) => {
+router.post('/joinclub',verifyToken, async (req, res) => {
     try {
         const newjoinClub = new JoinClub({
           
@@ -23,7 +23,7 @@ router.post('/joinclub', async (req, res) => {
 })
 
 
-router.get('/getJoinedClub', async (req, res) => {
+router.get('/getJoinedClub',verifyToken, async (req, res) => {
     const joinedClub = await JoinClub.find(id);
     res.json({ joinedClub: joinedClub });
 })

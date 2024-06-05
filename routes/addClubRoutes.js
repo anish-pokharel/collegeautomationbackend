@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router()
 const addClub = require('../models/addClubModel');
+const verifyToken=require('../middleware')
 
-router.post('/addClub',async (req, res) => {
+router.post('/addClub',verifyToken,async (req, res) => {
     try {
         const newClub = new addClub({
             clubStatus: req.body.clubStatus,
@@ -19,7 +20,7 @@ router.post('/addClub',async (req, res) => {
 })
 
 
-router.get('/getClubList', async (req, res) => {
+router.get('/getClubList',verifyToken, async (req, res) => {
     const clubName = await addClub.find();
     res.json({ clubName: clubName });
 })

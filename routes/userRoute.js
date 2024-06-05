@@ -8,7 +8,6 @@ router.post('/signup', async (req, res) => {
         const newUser = new userRegister({
             name: req.body.name,
             email: req.body.email,
-            // rollno: req.body.rollno,
             address: req.body.address,
             password: req.body.password,
             confirmPassword: req.body.confirmPassword,
@@ -23,7 +22,7 @@ router.post('/signup', async (req, res) => {
         res.json({ message: 'Register Sucessfull ' });
     }
     catch (error) {
-        res.json({ messgae: 'something is error', error });
+      return res.json({ messgae: 'something is error', error });
     }
 })
 
@@ -49,7 +48,9 @@ router.post('/signin', async (req, res) => {
             return res.json({ message: 'password is incorrect' });
         }
         const userRole = userData.role;
-        const token = jwt.sign({ email: userData.email }, 'secretKey');
+        // const token = jwt.sign({ email: userData.email }, 'secretKey');
+        const token = jwt.sign({ email: userData.email, userId: userData._id }, 'secretKey');
+
         res.json({ message: 'Login Sucessfull', role: userRole, token: token });
     }
     catch (error) {

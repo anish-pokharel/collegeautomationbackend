@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-
+const verifyToken=require('../middleware')
 const Sponsorship = require('../models/sponsorshipModel');
 
 
-router.post('/sponsorship', async (req, res) => {
+router.post('/sponsorship',verifyToken, async (req, res) => {
     try {
         const newSponsorship = new Sponsorship({
             name: req.body.name,
@@ -27,7 +27,7 @@ router.post('/sponsorship', async (req, res) => {
 })
 
 
-router.get('/getSponsorship', async (req, res) => {
+router.get('/getSponsorship',verifyToken, async (req, res) => {
     const sponsorship = await Sponsorship.find(decision);
     if(sponsorship.decision=="accepted"){
         res.json({ message: 'Accepted Sponsorship : ', sponsorship:sponsorship });

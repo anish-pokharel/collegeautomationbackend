@@ -3,7 +3,6 @@ const router = express.Router();
 const FeedbackModel = require('../models/FeedbackModel');
 const verifyToken = require('../middleware');
 
-// Create a new feedback record
 router.post('/addFeedback', verifyToken, async (req, res) => {
     try {
         const newFeedback = new FeedbackModel({
@@ -17,7 +16,6 @@ router.post('/addFeedback', verifyToken, async (req, res) => {
     }
 });
 
-// Get all feedback records
 router.get('/getFeedbackList', verifyToken, async (req, res) => {
     try {
         const feedbackList = await FeedbackModel.find();
@@ -27,7 +25,6 @@ router.get('/getFeedbackList', verifyToken, async (req, res) => {
     }
 });
 
-// Get a single feedback record by ID
 router.get('/getFeedback/:id', verifyToken, async (req, res) => {
     try {
         const feedback = await FeedbackModel.findById(req.params.id);
@@ -40,7 +37,6 @@ router.get('/getFeedback/:id', verifyToken, async (req, res) => {
     }
 });
 
-// Update a feedback record
 router.put('/updateFeedback/:id', verifyToken, async (req, res) => {
     try {
         const updatedFeedback = await FeedbackModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -53,7 +49,6 @@ router.put('/updateFeedback/:id', verifyToken, async (req, res) => {
     }
 });
 
-// Delete a feedback record
 router.delete('/deleteFeedback/:id', verifyToken, async (req, res) => {
     try {
         const deletedFeedback = await FeedbackModel.findByIdAndDelete(req.params.id);

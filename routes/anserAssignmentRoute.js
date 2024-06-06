@@ -17,12 +17,12 @@ const storage = multer.diskStorage({
   const upload = multer({ storage: storage });
 
 
-router.post('/addassignments', upload.single('file'), async (req, res) => {
+router.post('/postAnswerAssignment', upload.single('file'), async (req, res) => {
     try {
-      const { subject, assignment, rollno, remarks } = req.body;
-      const file = req.file.path;
+      const { subject, assignment,assignmentFile, rollno } = req.body;
+    
   
-      const newAssignment = new answerAssignment({ subject, assignment, file, rollno, remarks });
+      const newAssignment = new answerAssignment({ subject, assignment, assignmentFile, rollno });
       await newAssignment.save();
       res.status(201).json(newAssignment);
     } catch (error) {

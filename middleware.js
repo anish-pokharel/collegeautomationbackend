@@ -11,8 +11,9 @@ function verifyToken(req,res,next){
     if(!payload) {
         res.json({message:'unauthorized request3'})
     }
-    req.userId= payload.subject;
-    req.email=payload.email;
+    //req.userId= payload.subject;
+     //req.email=payload.email;
+     req.user=payload;
     next()
 }
 module.exports = verifyToken;

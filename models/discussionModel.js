@@ -2,7 +2,7 @@ const mongoose= require('mongoose');
 
 const DiscussionSchema= new mongoose.Schema({
     discussion_topic:{type: String, required: true},
-    date:{type:Date}, 
+    date:{type:String}, 
     decision_by:{type:String},
     decision:{type:String}
 })

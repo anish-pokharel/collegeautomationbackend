@@ -50,7 +50,7 @@ router.post('/signin', async (req, res) => {
         }
         const userRole = userData.role;
         // const token = jwt.sign({ email: userData.email }, 'secretKey');
-        const token = jwt.sign({ email: userData.email, userId: userData._id }, 'secretKey');
+        const token = jwt.sign({ email: userData.email, userId: userData._id , name: userData.name }, 'secretKey');
 
         res.json({ message: 'Login Sucessfull', role: userRole, token: token });
     }

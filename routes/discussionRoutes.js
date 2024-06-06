@@ -9,7 +9,7 @@ router.post('/discussion',verifyToken,  async (req, res) => {
         const newDiscussion = new Discussion({
             discussion_topic: req.body.discussion_topic,
             date: req.body.date,
-            decision_by: req.body.decision_by,
+            decision_by: req.user.name,
             decision: req.body.decision
         });
        

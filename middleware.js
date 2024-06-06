@@ -12,7 +12,7 @@ function verifyToken(req,res,next){
         res.json({message:'unauthorized request3'})
     }
     req.userId= payload.subject;
-     req.email=payload.email;
+    req.email=payload.email;
     next()
 }
 module.exports = verifyToken;

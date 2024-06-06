@@ -69,7 +69,7 @@ router.get('/userdata', async (req, res) => {
 
 router.get('/getuserdata', verifyToken, async (req, res) =>{
     try{
-            const { email } = req;
+            const { email } = req.user;
             const userdata= await userRegister.findOne({email});
             if(userdata){
                 return res.json({ data: userdata });

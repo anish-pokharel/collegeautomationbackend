@@ -1,13 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const Form = require('../models/sponsoeshipRequestModel');
-const verifyToken=require('../middleware')
+const verifyToken = require('../middleware')
 
 // Create
 router.post('/postsponsorship', verifyToken, async (req, res) => {
   try {
-    const { name, faculty, semester, amount1, amount2, amount3 } = req.body;
-    const newForm = new Form({ name, faculty, semester, amount1, amount2, amount3 });
+    const newForm = new Form({
+
+      name: req.body.name,
+      faculty: req.body.faculty,
+      semester: req.body.semester,
+      money: req.body.money,
+      topic: req.body.topic,
+      reason: req.body.reason
+    });
     await newForm.save();
     res.status(201).json(newForm);
   } catch (error) {

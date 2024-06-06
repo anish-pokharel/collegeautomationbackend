@@ -4,9 +4,9 @@ const formSponsorshipSchema = new mongoose.Schema({
   name: { type: String, required: true },
   faculty: { type: String, required: true },
   semester: { type: String, required: true },
-  amount1: { type: Number, required: true },
-  amount2: { type: Number, required: true },
-  amount3: { type: Number, required: true }
+  topic: { type: String, required: true },
+  money: { type: String, required: true },
+  reason: { type: String, required: true }
 });
 
 const SponsorshipForm = mongoose.model('sponsorshipForm', formSponsorshipSchema);

@@ -2,7 +2,7 @@ const mongoose= require('mongoose');
 
 const createDepartment= new mongoose.Schema({
     createFaculty:{type: String, required:true},
-    semester:{type:Number},
+    
     hod:{type: String},
    
 })

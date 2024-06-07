@@ -63,4 +63,43 @@ router.post('/postEnrollmentKeyForm', verifyToken, async (req, res) => {
   }
 });
 
+
+router.get('/enrollmentData/:id', async (req, res) => {
+  try {
+    const enrollment = await Enrollment.findById(req.params.id);
+    if (!enrollment) {
+      return res.status(404).json({ message: 'Enrollment not found' });
+    }
+    res.json(enrollment);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.put('/enrollmentUpdate/:id', async (req, res) => {
+  try {
+    const { enrollmentKey, subjects } = req.body;
+    const updatedEnrollment = await Enrollment.findByIdAndUpdate(req.params.id, {
+      enrollment_key: enrollmentKey,
+      subjects: subjects
+    }, { new: true });
+    res.json(updatedEnrollment);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+
+router.delete('/enrollmentDelete/:id', async (req, res) => {
+  try {
+    const enrollment = await Enrollment.findByIdAndDelete(req.params.id);
+    if (!enrollment) {
+      return res.status(404).json({ message: 'Enrollment not found' });
+    }
+    res.json({ message: 'Enrollment deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports = router;

@@ -102,4 +102,28 @@ router.delete('/enrollmentDelete/:id', async (req, res) => {
   }
 });
 
+router.delete('/deleteSubject/:enrollmentId/:subjectCode', verifyToken, async (req, res) => {
+  try {
+      const { enrollmentId, subjectCode } = req.params;
+
+      const enrollment = await Enrollment.findById(enrollmentId);
+      if (!enrollment) {
+          return res.status(404).json({ message: 'Enrollment not found' });
+      }
+
+      const subjectIndex = enrollment.subjects.findIndex(subject => subject.code === subjectCode);
+      if (subjectIndex === -1) {
+          return res.status(404).json({ message: 'Subject not found' });
+      }
+
+      enrollment.subjects.splice(subjectIndex, 1); // Remove the subject
+      await enrollment.save();
+
+      res.json({ message: 'Subject deleted successfully', enrollment });
+  } catch (error) {
+      console.error('Error deleting subject:', error);
+      res.status(500).json({ message: 'Something went wrong', error });
+  }
+});
+
 module.exports = router;

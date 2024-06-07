@@ -27,7 +27,8 @@ router.get('/getFeedbackList', verifyToken, async (req, res) => {
 
 router.get('/getFeedback/:id', verifyToken, async (req, res) => {
     try {
-        const feedback = await FeedbackModel.findById(req.params.id);
+        // const { email } = req.user;
+        const feedback = await FeedbackModel.findById({id});
         if (!feedback) {
             return res.status(404).json({ message: 'Feedback not found' });
         }

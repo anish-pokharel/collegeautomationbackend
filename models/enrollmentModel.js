@@ -14,7 +14,10 @@ const enrollmentSchema = new mongoose.Schema({
         type: String,
         required: true
       },
-      teacher:{type: String, required: true }
+      teacher:{
+        type: String,
+        required: true 
+      },
     }],
    
   });

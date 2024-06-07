@@ -11,7 +11,7 @@ router.post('/enrollmentCreate', async (req, res) => {
     const { enrollmentKey, subjects } = req.body;
     const enrollment = new Enrollment({
       enrollment_key: enrollmentKey,
-      subjects: subjects
+      subjects: subjects,
     });
     const savedEnrollment = await enrollment.save();
     res.status(201).json(savedEnrollment);

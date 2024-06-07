@@ -3,7 +3,6 @@ const router = express.Router();
 const Event = require('../models/eventModel');
 const verifyToken = require('../middleware');  
 
-// CREATE - Add a new event
 router.post('/addEvent', verifyToken, async (req, res) => {
     try {
         const newEvent = new Event({
@@ -20,7 +19,6 @@ router.post('/addEvent', verifyToken, async (req, res) => {
     }
 });
 
-// READ - Get the list of all events
 router.get('/getEventList', verifyToken, async (req, res) => {
     try {
         const events = await Event.find();
@@ -30,7 +28,6 @@ router.get('/getEventList', verifyToken, async (req, res) => {
     }
 });
 
-// READ - Get a single event by ID
 router.get('/getEvent/:id', verifyToken, async (req, res) => {
     try {
         const { id } = req.params;
@@ -46,7 +43,6 @@ router.get('/getEvent/:id', verifyToken, async (req, res) => {
     }
 });
 
-// UPDATE - Update an event by ID
 router.put('/updateEvent/:id', verifyToken, async (req, res) => {
     try {
         const { id } = req.params;
@@ -62,8 +58,7 @@ router.put('/updateEvent/:id', verifyToken, async (req, res) => {
     }
 });
 
-// DELETE - Remove an event by ID
-router.delete('/deleteEvent/:id', verifyToken, async (req, res) => {
+router.delete('/delEventList/:id', verifyToken, async (req, res) => {
     try {
         const { id } = req.params;
         const deletedEvent = await Event.findByIdAndDelete(id);

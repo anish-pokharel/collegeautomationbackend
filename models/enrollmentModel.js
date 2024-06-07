@@ -13,8 +13,10 @@ const enrollmentSchema = new mongoose.Schema({
       code: {
         type: String,
         required: true
-      }
-    }]
+      },
+      teacher:{type: String, required: true }
+    }],
+   
   });
   const EnrollmentSubjects = mongoose.model('EnrollmentSubjects', enrollmentSchema);
   module.exports = EnrollmentSubjects;

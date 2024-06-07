@@ -26,4 +26,36 @@ router.get('/getClubList',verifyToken, async (req, res) => {
 })
 
 
+router.put('/updateClub/:id', verifyToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updatedClub = await addClub.findByIdAndUpdate(id, req.body, { new: true });
+
+        if (!updatedClub) {
+            return res.status(404).json({ message: 'Club not found' });
+        }
+
+        res.json({ message: 'Club updated successfully', updatedClub });
+    } catch (error) {
+        res.status(500).json({ message: 'Something went wrong', error });
+    }
+});
+
+
+router.delete('/deleteClub/:id', verifyToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedClub = await addClub.findByIdAndDelete(id);
+
+        if (!deletedClub) {
+            return res.status(404).json({ message: 'Club not found' });
+        }
+
+        res.json({ message: 'Club deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Something went wrong', error });
+    }
+})
+
+
 module.exports = router;

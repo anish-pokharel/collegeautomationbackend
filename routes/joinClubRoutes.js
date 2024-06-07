@@ -6,11 +6,15 @@ const JoinClub = require('../models/joinClubModel');
 // Create a new joinClub record
 router.post('/joinclub', verifyToken, async (req, res) => {
     try {
+        const currentDate = new Date();
+        const formattedDate = currentDate.toDateString(); // Format as 'Fri Jun 07 2024'
+
         const newJoinClub = new JoinClub({
+            joinedBy:req.user.email,
             clubStatus: req.body.clubStatus,
             clubName: req.body.clubName,
             reason: req.body.reason,
-            createdDate: Date.now()
+            joinedDate: formattedDate
         });
         await newJoinClub.save();
         res.status(201).json({ message: 'New club joined successfully', joinClub: newJoinClub });
@@ -29,10 +33,11 @@ router.get('/joinclub', verifyToken, async (req, res) => {
     }
 });
 
-// Get a single joinClub record by ID
-router.get('/joinclub/:id', verifyToken, async (req, res) => {
+// Get a single joinClub record by email
+router.get('/getjoinedclubbyemail', verifyToken, async (req, res) => {
     try {
-        const joinClub = await JoinClub.findById(req.params.id);
+        const {email}=req.user;
+        const joinClub = await JoinClub.find({email});
         if (!joinClub) {
             return res.status(404).json({ message: 'Join club record not found' });
         }

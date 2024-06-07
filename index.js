@@ -14,6 +14,7 @@ const anserAssignment= require('./routes/anserAssignmentRoute')
 const sponsorshipRequest= require('./routes/sponsorshipRequestRoute')
 const createDepartmentRoute= require('./routes/createDepartmentRoute')
 const jobVacancy= require('./routes/jobVacancyRoute')
+const addEvent= require('./routes/eventRoute')
 
 
 app.use(express.json());
@@ -30,6 +31,7 @@ app.use(sponsorShip);
 app.use(sponsorshipRequest);
 app.use(addUser);
 app.use(jobVacancy);
+app.use(addEvent);
 app.listen(3200,()=>{
     console.log('LocalHost is connected');
 })

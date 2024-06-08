@@ -6,6 +6,7 @@ const verifyToken = require('../middleware');
 router.post('/addFeedback', verifyToken, async (req, res) => {
     try {
         const newFeedback = new FeedbackModel({
+            feedbackBy:req.user.email,
             feedbackGroup: req.body.feedbackGroup,
             feedbackAbout: req.body.feedbackAbout
         });
@@ -25,10 +26,10 @@ router.get('/getFeedbackList', verifyToken, async (req, res) => {
     }
 });
 
-router.get('/getFeedback/:id', verifyToken, async (req, res) => {
+router.get('/getFeedbackbyemail', verifyToken, async (req, res) => {
     try {
-        // const { email } = req.user;
-        const feedback = await FeedbackModel.findById({id});
+         const { email } = req.user;
+        const feedback = await FeedbackModel.find({feedbackBy:email});
         if (!feedback) {
             return res.status(404).json({ message: 'Feedback not found' });
         }

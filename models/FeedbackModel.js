@@ -1,7 +1,7 @@
 const mongoose= require('mongoose');
 
 const FeedbackSchema= new mongoose.Schema({
-  
+    feedbackBy:{type:String,required:true },
     feedbackGroup:{type: String, 
         enum:['Admin','Teacher'], required:true },
         feedbackAbout:{type:String},

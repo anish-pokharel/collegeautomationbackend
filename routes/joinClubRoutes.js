@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const verifyToken = require('../middleware');
 const JoinClub = require('../models/joinClubModel');
-
+const Signup= require('../models/signupModel');
 // Create a new joinClub record
 router.post('/joinclub', verifyToken, async (req, res) => {
     try {
@@ -37,11 +37,19 @@ router.get('/joinclub', verifyToken, async (req, res) => {
 router.get('/getjoinedclubbyemail', verifyToken, async (req, res) => {
     try {
         const {email}=req.user;
-        const joinClub = await JoinClub.find({email});
+        const User=await Signup.findOne({email});
+        const joinClub = await JoinClub.find({joinedBy: email});
         if (!joinClub) {
             return res.status(404).json({ message: 'Join club record not found' });
         }
-        res.json(joinClub);
+        // Add user's name to each joinClub record
+        const joinClubsWithName = joinClub.map(joinClub => ({
+            ...joinClub._doc,
+            joinedBy: User.name
+        }));
+
+        res.json({JoinedClubs: joinClubsWithName});
+        //res.json(joinClub);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching joinClub record', error });
     }

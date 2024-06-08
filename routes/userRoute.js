@@ -9,6 +9,7 @@ router.post('/signup', async (req, res) => {
         const newUser = new userRegister({
             name: req.body.name,
             email: req.body.email,
+            rollno:req.body.rollno,
             address: req.body.address,
             password: req.body.password,
             confirmPassword: req.body.confirmPassword,
@@ -50,7 +51,7 @@ router.post('/signin', async (req, res) => {
         }
         const userRole = userData.role;
         // const token = jwt.sign({ email: userData.email }, 'secretKey');
-        const token = jwt.sign({ email: userData.email, userId: userData._id , name: userData.name }, 'secretKey');
+        const token = jwt.sign({ email: userData.email, userId: userData._id , name: userData.name , rollno: userData.rollno}, 'secretKey');
 
         res.json({ message: 'Login Sucessfull', role: userRole, token: token });
     }

@@ -17,11 +17,12 @@ const storage = multer.diskStorage({
   const upload = multer({ storage: storage });
 
 
-router.post('/postAnswerAssignment', upload.single('file'), async (req, res) => {
+router.post('/postAnswerAssignment', upload.single('assignmentFile'), async (req, res) => {
     try {
-      const { subject, assignment,assignmentFile, rollno } = req.body;
-    
-  
+      const { subject, assignment, rollno } = req.body;
+      //const assignmentFile= req.file.buffer.toString('base64');
+      const assignmentFile= req.file;
+      
       const newAssignment = new answerAssignment({ subject, assignment, assignmentFile, rollno });
       await newAssignment.save();
       res.status(201).json(newAssignment);
@@ -52,7 +53,7 @@ router.post('/postAnswerAssignment', upload.single('file'), async (req, res) => 
   });
   
   // Update
-  router.put('/putassignments/:id', upload.single('file'), async (req, res) => {
+  router.put('/putassignments/:id', upload.single('assignmentFile'), async (req, res) => {
     try {
       const { subject, assignment, rollno, remarks } = req.body;
       const updateData = { subject, assignment, rollno, remarks };

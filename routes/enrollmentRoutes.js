@@ -38,7 +38,7 @@ router.post('/postEnrollmentKeyForm', verifyToken, async (req, res) => {
     // const userId = req.userId ? req.userId.id : null; 
     // const userId = req.userId;
     // const userData =verifyToken.req.userId
-    console.log(userData);
+    // console.log(userData);
     // if (!userId) {
     //   return res.status(400).json({ message: 'User ID not found' });
     // }

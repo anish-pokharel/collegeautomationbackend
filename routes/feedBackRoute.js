@@ -9,7 +9,8 @@ router.post('/addFeedback', verifyToken, async (req, res) => {
         const newFeedback = new FeedbackModel({
             feedbackBy:req.user.email,
             feedbackGroup: req.body.feedbackGroup,
-            feedbackAbout: req.body.feedbackAbout
+            feedbackAbout: req.body.feedbackAbout,
+            feedbackFor: req.body.feedbackFor
         });
         await newFeedback.save();
         res.status(201).json({ message: 'Feedback saved successfully', feedback: newFeedback });

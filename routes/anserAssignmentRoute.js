@@ -5,24 +5,24 @@ const multer = require('multer');
 const verifyToken=require('../middleware')
 const Signup = require('../models/signupModel');
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, 'uploads/');
-    },
-    filename: (req, file, cb) => {
-      cb(null, `${Date.now()}-${file.originalname}`);
-    }
-  });
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//       cb(null, 'uploads/');
+//     },
+//     filename: (req, file, cb) => {
+//       cb(null, `${Date.now()}-${file.originalname}`);
+//     }
+//   });
   
-  const upload = multer({ storage: storage });
+//   const upload = multer({ storage: storage });
+  // upload.single('assignmentFile'),
 
-
-router.post('/postAnswerAssignment', upload.single('assignmentFile'), async (req, res) => {
+router.post('/postAnswerAssignment',verifyToken,  async (req, res) => {
     try {
       const { rollno }= req.user;
       const { subject, assignment } = req.body;
-      //const assignmentFile= req.file.buffer.toString('base64');
-      const assignmentFile= req.file;
+      // const assignmentFile= req.file.buffer.toString('base64');
+      // const assignmentFile= req.file;
       
       const newAssignment = new answerAssignment({ subject, assignment, assignmentFile, rollno });
       await newAssignment.save();
@@ -78,21 +78,21 @@ router.post('/postAnswerAssignment', upload.single('assignmentFile'), async (req
   });
 
 
-  // Update
-  router.put('/putassignments/:id', upload.single('assignmentFile'), async (req, res) => {
-    try {
-      const { subject, assignment, rollno, remarks } = req.body;
-      const updateData = { subject, assignment, rollno, remarks };
-      if (req.file) updateData.file = req.file.path;
+  // // Update
+  // router.put('/putassignments/:id', upload.single('assignmentFile'), async (req, res) => {
+  //   try {
+  //     const { subject, assignment, rollno, remarks } = req.body;
+  //     const updateData = { subject, assignment, rollno, remarks };
+  //     if (req.file) updateData.file = req.file.path;
   
-      const updatedAssignment = await answerAssignment.findByIdAndUpdate(req.params.id, updateData, { new: true });
-      if (!updatedAssignment) return res.status(404).json({ message: 'Assignment not found' });
+  //     const updatedAssignment = await answerAssignment.findByIdAndUpdate(req.params.id, updateData, { new: true });
+  //     if (!updatedAssignment) return res.status(404).json({ message: 'Assignment not found' });
   
-      res.json(updatedAssignment);
-    } catch (error) {
-      res.status(500).json({ message: 'Error updating assignment', error });
-    }
-  });
+  //     res.json(updatedAssignment);
+  //   } catch (error) {
+  //     res.status(500).json({ message: 'Error updating assignment', error });
+  //   }
+  // });
   
   // Delete
   router.delete('/delassignments/:id', async (req, res) => {

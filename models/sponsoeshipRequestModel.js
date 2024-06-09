@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const formSponsorshipSchema = new mongoose.Schema({
-  name: { type: String, required: true },
+  name: { type: String, },
   faculty: { type: String, required: true },
   semester: { type: String, required: true },
   topic: { type: String, required: true },

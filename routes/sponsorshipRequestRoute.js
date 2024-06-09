@@ -1,22 +1,23 @@
 const express = require('express');
 const router = express.Router();
 const Form = require('../models/sponsoeshipRequestModel');
-const verifyToken = require('../middleware')
-
+const verifyToken = require('../middleware');
+const Signup = require('../models/signupModel');
 // Create
 router.post('/postsponsorship', verifyToken, async (req, res) => {
   try {
     const newForm = new Form({
 
-      name: req.body.name,
+      name: req.user.name,
       faculty: req.body.faculty,
       semester: req.body.semester,
       money: req.body.money,
       topic: req.body.topic,
-      reason: req.body.reason
+      reason: req.body.reason,
+      decision:req.body.decision
     });
     await newForm.save();
-    res.status(201).json(newForm);
+    res.status(201).json({message: "Sponsorship requested" ,newForm});
   } catch (error) {
     res.status(500).json({ message: 'Error creating form', error });
   }
@@ -43,11 +44,32 @@ router.get('/getsponsorship/:id', verifyToken, async (req, res) => {
   }
 });
 
+router.get('/getsponsorshipbyemail', verifyToken, async (req, res) => {
+  try {
+      const { email } = req.user;
+      const user = await Signup.findOne({ email });
+
+      // If the user is not found, handle the error
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+      
+      const sponsorship = await Form.find({ name: user.name });
+      
+      res.json({ Sponsorship: sponsorship });
+     
+  } catch (error) {
+      console.error('Error fetching feedback:', error); // Log the error
+      res.status(500).json({ message: 'Error fetching feedback', error: error.message });
+  }
+});
+
 // Update
 router.put('/putsponsorship:id', verifyToken, async (req, res) => {
   try {
-    const { name, faculty, semester, amount1, amount2, amount3 } = req.body;
-    const updatedForm = await Form.findByIdAndUpdate(req.params.id, { name, faculty, semester, amount1, amount2, amount3 }, { new: true });
+    const {name}=req.user;
+    const {  faculty, semester, topic, money, reason } = req.body;
+    const updatedForm = await Form.findByIdAndUpdate(req.params.id, { name, faculty, semester, topic, money, reason }, { new: true });
     if (!updatedForm) return res.status(404).json({ message: 'Form not found' });
     res.json(updatedForm);
   } catch (error) {

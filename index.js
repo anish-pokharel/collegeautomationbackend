@@ -17,7 +17,7 @@ const jobVacancy= require('./routes/jobVacancyRoute')
 const addEvent= require('./routes/eventRoute')
 const giveAssignment= require('./routes/giveAssignmentRoutes')
 const giveQuestion= require('./routes/giveQuestionRoute')
-
+const AcademicRecord=require('./routes/AcademicRecordRoutes')
 
 app.use(express.json());
 app.use(cors());
@@ -36,6 +36,7 @@ app.use(jobVacancy);
 app.use(addEvent);
 app.use(giveAssignment);
 app.use(giveQuestion);
+app.use(AcademicRecord);
 app.listen(3200,()=>{
     console.log('LocalHost is connected');
 })

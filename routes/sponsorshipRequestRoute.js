@@ -54,13 +54,16 @@ router.get('/getsponsorshipbyemail', verifyToken, async (req, res) => {
           return res.status(404).json({ message: 'User not found' });
       }
       
-      const sponsorship = await Form.find({ name: user.name });
-      
-      res.json({ Sponsorship: sponsorship });
+      const sponsorships = await Form.find({ name: user.name });
+       // Check if sponsorships is an empty array
+      if (!sponsorships || sponsorships.length === 0) {
+        return res.status(404).json({ message: 'No sponsorships found' });
+      }
+      res.json({ Sponsorship: sponsorships });
      
   } catch (error) {
-      console.error('Error fetching feedback:', error); // Log the error
-      res.status(500).json({ message: 'Error fetching feedback', error: error.message });
+      console.error('Error fetching sponsorship details:', error); // Log the error
+      res.status(500).json({ message: 'Error fetching sponsorship details', error: error.message });
   }
 });
 

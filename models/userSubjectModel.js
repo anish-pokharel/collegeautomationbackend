@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 
 const userSubjectsSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId },
+  userEmail: { type: String },
   subjects: [{ name: String, credit: String, code: String }],
 });
 

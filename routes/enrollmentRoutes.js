@@ -34,14 +34,8 @@ router.get('/enrollmentData',verifyToken, async (req, res) => {
 
 router.post('/postEnrollmentKeyForm', verifyToken, async (req, res) => {
   try {
-    const { enrollment_key } = req.body;
-    // const userId = req.userId ? req.userId.id : null; 
-    // const userId = req.userId;
-    // const userData =verifyToken.req.userId
-    //console.log(userData);
-    // if (!userId) {
-    //   return res.status(400).json({ message: 'User ID not found' });
-    // }
+    const { enrollment_key,userEmail } = req.body;
+    
     const findEnrollmentKey = await Enrollment.findOne({ enrollment_key });
     if (!findEnrollmentKey) {
       console.log('Enrollment key is not found');
@@ -49,12 +43,14 @@ router.post('/postEnrollmentKeyForm', verifyToken, async (req, res) => {
     }
 
     console.log('Associated Subjects:', findEnrollmentKey.subjects);
+    const enrolledSubjects = new UserSubjects({
+      enrollment_key: findEnrollmentKey.enrollment_key,
+      subjects: findEnrollmentKey.subjects,
+      userEmail:req.user.email
+    });
 
-    // const userSubjects = new UserSubjects({
-    //   userId: userId,
-    //   subjects: findEnrollmentKey.subjects,
-    // });
-    // await userSubjects.save();
+    await enrolledSubjects.save();
+
 
     res.json({ matchEnrollmentKey: true, message: 'Enrollment key is found', subjects: findEnrollmentKey.subjects });
   } catch (error) {
@@ -63,14 +59,14 @@ router.post('/postEnrollmentKeyForm', verifyToken, async (req, res) => {
   }
 });
 
-
-router.get('/enrollmentData/:id', async (req, res) => {
+router.get('/enrollmentDatabyEmail',verifyToken, async (req, res) => {
   try {
-    const enrollment = await Enrollment.findById(req.params.id);
-    if (!enrollment) {
-      return res.status(404).json({ message: 'Enrollment not found' });
+    const userEmail = req.user.email;
+    const subject = await UserSubjects.findOne({ userEmail: userEmail });
+    if (!subject) {
+      return res.status(404).json({ message: 'subject not found' });
     }
-    res.json(enrollment);
+    res.json(subject);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

@@ -5,28 +5,33 @@ const multer = require('multer');
 const verifyToken=require('../middleware')
 const Signup = require('../models/signupModel');
 
-// const storage = multer.diskStorage({
-//     destination: (req, file, cb) => {
-//       cb(null, 'uploads/');
-//     },
-//     filename: (req, file, cb) => {
-//       cb(null, `${Date.now()}-${file.originalname}`);
-//     }
-//   });
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+      cb(null, `${Date.now()}-${file.originalname}`);
+    }
+  });
   
-//   const upload = multer({ storage: storage });
-  // upload.single('assignmentFile'),
+  const upload = multer({ storage: storage });
+  upload.single('assignmentFile'),
 
-router.post('/postAnswerAssignment',verifyToken,  async (req, res) => {
+router.post('/postAnswerAssignment',verifyToken, upload.single("assignmentFile"),  async (req, res) => {
     try {
       const { rollno }= req.user;
       const { subject, assignment } = req.body;
       // const assignmentFile= req.file.buffer.toString('base64');
-      // const assignmentFile= req.file;
+
+       const {filename}= req.file;
+       if(!filename){
+        return res.status(400).json({ error: 'No file uploaded' });
+        }else{
+          const newAssignment = new answerAssignment({ subject, assignment, assignmentFile:`http://localhost:3200/uploads/${filename}`, rollno });
+          await newAssignment.save();
+          res.status(201).json({message:"Assignment submited successfully.", newAssignment});
+        }
       
-      const newAssignment = new answerAssignment({ subject, assignment, assignmentFile, rollno });
-      await newAssignment.save();
-      res.status(201).json(newAssignment);
     } catch (error) {
       res.status(500).json({ message: 'Error creating assignment', error });
     }

@@ -6,7 +6,7 @@ const eventSchema = new mongoose.Schema({
         required: true
     },
     eventDate: {
-        type: Date,
+        type: String,
         required: true
     },
     location: {
@@ -17,8 +17,11 @@ const eventSchema = new mongoose.Schema({
         type: String,
     },
     createdDate: {
-        type: Date,
-        default: Date.now
+        type: String,
+        //default: Date.now
+    },
+    createdBy:{
+        type: String
     }
 });
 

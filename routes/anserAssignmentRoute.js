@@ -3,7 +3,7 @@ const router = express.Router();
 const answerAssignment = require('../models/answerAssignmentModel')
 const multer = require('multer'); 
 const verifyToken=require('../middleware')
-
+const Signup = require('../models/signupModel');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -19,7 +19,8 @@ const storage = multer.diskStorage({
 
 router.post('/postAnswerAssignment', upload.single('assignmentFile'), async (req, res) => {
     try {
-      const { subject, assignment, rollno } = req.body;
+      const { rollno }= req.user;
+      const { subject, assignment } = req.body;
       //const assignmentFile= req.file.buffer.toString('base64');
       const assignmentFile= req.file;
       
@@ -52,6 +53,31 @@ router.post('/postAnswerAssignment', upload.single('assignmentFile'), async (req
     }
   });
   
+//Read One by email
+  router.get('/getassignmentsbyemail', verifyToken, async (req, res) => {
+    try {
+        const { email } = req.user;
+        const user = await Signup.findOne({ email });
+  
+        // If the user is not found, handle the error
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        
+        const assignment = await answerAssignment.find({ rollno: user.rollno });
+         // Check if assignment is an empty array
+        if (!assignment || assignment.length === 0) {
+          return res.status(404).json({ message: 'No assignment found' });
+        }
+        res.json({ Assignment: assignment });
+       
+    } catch (error) {
+        console.error('Error fetching assignment:', error); // Log the error
+        res.status(500).json({ message: 'Error fetching assignment', error: error.message });
+    }
+  });
+
+
   // Update
   router.put('/putassignments/:id', upload.single('assignmentFile'), async (req, res) => {
     try {

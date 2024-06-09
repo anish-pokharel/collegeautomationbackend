@@ -27,7 +27,7 @@ router.post('/sponsorship',verifyToken, async (req, res) => {
 })
 
 
-router.get('/getSponsorship',verifyToken, async (req, res) => {
+router.get('/getSponsorships',verifyToken, async (req, res) => {
     const sponsorship = await Sponsorship.find(decision);
     if(sponsorship.decision=="accepted"){
         res.json({ message: 'Accepted Sponsorship : ', sponsorship:sponsorship });

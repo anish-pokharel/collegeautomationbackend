@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const FeedbackModel = require('../models/FeedbackModel');
 const verifyToken = require('../middleware');
+const Signup= require('../models/signupModel');
 
 router.post('/addFeedback', verifyToken, async (req, res) => {
     try {
@@ -26,18 +27,50 @@ router.get('/getFeedbackList', verifyToken, async (req, res) => {
     }
 });
 
+// router.get('/getFeedbackbyemail', verifyToken, async (req, res) => {
+//     try {
+//         const {email}=req.user;
+//         const User=await Signup.findOne({email});
+//         const feedback = await FeedbackModel.find({feedbackBy:email});
+//         if (!feedback) {
+//             return res.status(404).json({ message: 'Feedback not found' });
+//         }
+//         res.json({ feedback });
+//     } catch (error) {
+//         res.status(500).json({ message: 'Error fetching feedback', error });
+//     }
+// });
+
 router.get('/getFeedbackbyemail', verifyToken, async (req, res) => {
     try {
-         const { email } = req.user;
-        const feedback = await FeedbackModel.find({feedbackBy:email});
-        if (!feedback) {
+        const { email } = req.user;
+        const user = await Signup.findOne({ email });
+
+        // If the user is not found, handle the error
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const feedback = await FeedbackModel.find({ feedbackBy: email });
+
+        // Check if feedback is an empty array
+        if (!feedback || feedback.length === 0) {
             return res.status(404).json({ message: 'Feedback not found' });
         }
-        res.json({ feedback });
+
+        // Add user's name to each feedback record
+        const feedbackByName = feedback.map(fb => ({
+            ...fb._doc,
+            feedbackBy: user.name
+        }));
+
+        res.json({ feedback: feedbackByName });
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching feedback', error });
+        console.error('Error fetching feedback:', error); // Log the error
+        res.status(500).json({ message: 'Error fetching feedback', error: error.message });
     }
 });
+
 
 router.put('/updateFeedback/:id', verifyToken, async (req, res) => {
     try {

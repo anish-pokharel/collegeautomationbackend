@@ -39,7 +39,7 @@ router.get('/vacancies/:id', async (req, res) => {
 
 router.put('/vacancies/:id', async (req, res) => {
     try {
-        const vacancy = await Vacancy.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+        const vacancy = await Vacancy.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!vacancy) {
             return res.status(404).send('Vacancy not found');
         }

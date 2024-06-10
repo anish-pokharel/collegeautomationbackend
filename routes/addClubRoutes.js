@@ -5,10 +5,13 @@ const verifyToken=require('../middleware')
 
 router.post('/addClub',verifyToken,async (req, res) => {
     try {
+        const currentDate = new Date();
+        const formattedDate = currentDate.toDateString();
         const newClub = new addClub({
             clubStatus: req.body.clubStatus,
             clubName: req.body.clubName,
-            // createdDate: Date.now(),
+            contactNumber: req.body.contactNumber,
+            createdDate: formattedDate,
         });
        
         await newClub.save();

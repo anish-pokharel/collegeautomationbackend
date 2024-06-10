@@ -43,6 +43,26 @@ router.get('/user/faculty', async (req, res) => {
     }
   });
   
+router.get('/user/student', async (req, res) => {
+    try {
+      const student = await userRegister.find({ role: 'student' });
+      const count = await userRegister.countDocuments({ role: 'student' });
+      res.json({ student, count });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+  
+router.get('/user/secretary', async (req, res) => {
+    try {
+      const secretary = await userRegister.find({ role: 'secretary' });
+      const count = await userRegister.countDocuments({ role: 'secretary' });
+      res.json({ secretary, count });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+  
 
 router.post('/signin', async (req, res) => {
     try {

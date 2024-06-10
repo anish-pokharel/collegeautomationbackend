@@ -33,6 +33,16 @@ router.post('/signup', async (req, res) => {
 //     res.json({ userData: userData });
 // })
 
+router.get('/user/faculty', async (req, res) => {
+    try {
+      const faculty = await userRegister.find({ role: 'faculty' });
+      const count = await userRegister.countDocuments({ role: 'faculty' });
+      res.json({ faculty, count });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+  
 
 router.post('/signin', async (req, res) => {
     try {

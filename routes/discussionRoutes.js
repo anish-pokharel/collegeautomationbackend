@@ -26,6 +26,31 @@ router.get('/getdiscussion', verifyToken, async (req, res) => {
     const discussion = await Discussion.find();
     res.json({ discussion: discussion });
 })
+router.put('/discussion/:id', verifyToken, async (req, res) => {
+    try {
+        const updatedDiscussion = await Discussion.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+        );
+        res.json({ message: 'Discussion updated successfully', discussion: updatedDiscussion });
+    } catch (error) {
+        res.status(500).json({ message: 'Something went wrong', error });
+    }
+});
 
+router.delete('/discussion/:id', verifyToken, async (req, res) => {
+    try {
+       const discussion=  await Discussion.findByIdAndDelete(req.params.id);
+       if(!discussion)
+        {
+            return res.status(404).json({ message: 'Discussion not found' });
+        }
+        
+        res.json({ message: 'Discussion deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Something went wrong', error });
+    }
+});
 
 module.exports = router;

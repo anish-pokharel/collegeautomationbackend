@@ -2,6 +2,8 @@ const express = require('express');
 const app = express();
 const connectdb = require('./db');
 const cors = require('cors');
+
+const path = require('path'); 
 const userRoutes= require('./routes/userRoute')
 const discussion= require('./routes/discussionRoutes')
 const joinClub= require('./routes/joinClubRoutes')
@@ -37,6 +39,9 @@ app.use(addEvent);
 app.use(giveAssignment);
 app.use(giveQuestion);
 app.use(AcademicRecord);
+  // Serve static files from the "uploads" directory
+  app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 app.listen(3200,()=>{
     console.log('LocalHost is connected');
 })

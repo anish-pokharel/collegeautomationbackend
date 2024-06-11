@@ -44,7 +44,7 @@ router.get('/departments/:id', async (req, res) => {
 router.put('/departments/:id', async (req, res) => {
     try {
         // const department = await createDepartmentListModel.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-        const department = await createDepartmentListModel.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+        const department = await createDepartmentListModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
 
         if (!department) {
             return res.status(404).send('Department not found');

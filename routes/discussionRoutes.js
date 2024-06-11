@@ -38,6 +38,14 @@ router.put('/discussion/:id', verifyToken, async (req, res) => {
         res.status(500).json({ message: 'Something went wrong', error });
     }
 });
+router.get('/discussion/:id', verifyToken, async (req, res) => {
+    try {
+        const discussion = await Discussion.findById(req.params.id);
+        res.status(200).send(discussion);
+    } catch (error) {
+        res.status(500).json({ message: 'Something went wrong', error });
+    }
+});
 
 router.delete('/discussion/:id', verifyToken, async (req, res) => {
     try {

@@ -11,6 +11,7 @@ router.post('/addClub',verifyToken,async (req, res) => {
             clubStatus: req.body.clubStatus,
             clubName: req.body.clubName,
             contactNumber: req.body.contactNumber,
+            contactEmail:req.body.contactEmail,
             createdDate: formattedDate,
         });
        

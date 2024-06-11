@@ -1,17 +1,39 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
 const Assignment = require('../models/giveAssignmentModel')
 const verifyToken=require('../middleware')
+const Signup=require('../models/signupModel');
+const Enrollment=require('../models/enrollmentModel');
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+      cb(null, `${Date.now()}-${file.originalname}`);
+    }
+  });
+  
+  const upload = multer({ storage: storage });
+  upload.single('assignmentFile'),
 
 
 
 
-
-router.post('/postGiveAssignments',verifyToken, async (req, res) => {
+router.post('/postGiveAssignments',verifyToken, upload.single("assignmentFile"), async (req, res) => {
     try {
-        const assignment = new Assignment(req.body);
-        const savedAssignment = await assignment.save();
-        res.status(201).json(savedAssignment);
+        
+        const {subject, assignmentName,remarks}=req.body;
+        const {filename}= req.file;
+        if(!filename){
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+        else{
+            const assignment = new Assignment({subject, assignmentName,assignmentFile:`http://localhost:3200/uploads/${filename}`,remarks});
+            const savedAssignment = await assignment.save();
+            res.status(201).json(savedAssignment);
+        }
     } catch (err) {
         res.status(400).json({ message: err.message });
     }
@@ -39,6 +61,41 @@ router.get('/getGiveAssignments/:id', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
+
+
+  
+//Read One by email
+router.get('/getassignmentsgivenbyemail', verifyToken, async (req, res) => {
+    try {
+        const { email } = req.user;
+        const user = await Signup.findOne({ email });
+        const enrollment= await Enrollment.findOne(teacher);
+        
+        // If the user is not found, handle the error
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        if(user.name === enrollment.teacher){
+
+            const assignment = await Assignment.find(subject);
+
+            // Check if assignment is an empty array
+            if (!assignment || assignment.length === 0) {
+                return res.status(404).json({ message: 'No assignment found' });
+               }
+      
+            if(enrollment.subjects === assignment.subject){
+                
+                res.json({ Assignment: assignment });
+            }
+        }
+       
+    } catch (error) {
+        console.error('Error fetching assignment:', error); // Log the error
+        res.status(500).json({ message: 'Error fetching assignment', error: error.message });
+    }
+  });
+
 
 // Update an assignment
 router.put('/putGiveAssignments/:id', async (req, res) => {

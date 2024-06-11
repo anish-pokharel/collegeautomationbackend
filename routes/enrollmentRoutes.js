@@ -30,7 +30,28 @@ router.get('/enrollmentData',verifyToken, async (req, res) => {
 });
 
 
-
+router.get('/enrollmentData/subjects', verifyToken, async (req, res) => {
+  try {
+    const { email } = req.user;
+      const enrollments = await Enrollment.find({});
+      const subjects = enrollments.flatMap(enrollment => enrollment.subjects.filter(subject =>subject.teacher === email));
+      const count = subjects.length; // Get the count of subjects
+      res.json({subjects, count});
+  } catch (error) {
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+router.get('/subjectsList', verifyToken, async (req, res) => {
+  try {
+    // const { email } = req.user;
+      const enrollments = await Enrollment.find({});
+      const subjects = enrollments.flatMap(enrollment => enrollment.subjects);
+      const count = subjects.length; // Get the count of subjects
+      res.json({subjects, count});
+  } catch (error) {
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 router.post('/postEnrollmentKeyForm', verifyToken, async (req, res) => {
   try {

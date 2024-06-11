@@ -37,81 +37,81 @@ router.get('/joinclub', verifyToken, async (req, res) => {
 });
 
 // Get a single joinClub record by email
-router.get('/getjoinedclubbyemail', verifyToken, async (req, res) => {
-    try {
-        const {email}=req.user;
-        const User=await Signup.findOne({email});
-        const joinClub = await JoinClub.find({joinedBy: email});
-        if (!joinClub) {
-            return res.status(404).json({ message: 'Join club record not found' });
-        }
-        // Add user's name to each joinClub record
-        const joinClubsWithName = joinClub.map(joinClub => ({
-            ...joinClub._doc,
-            joinedBy: User.name
-        }));
-        if(joinClubsWithName.decision=='Requested')
-        {
-            res.json({Requested_Clubs: joinClubsWithName});
-        }
-        else if(joinClubsWithName.decision=='Accepted')
-        {
-            res.json({Accepeted_Clubs: joinClubsWithName});
-        }
-        else if(joinClubsWithName.decision=='Rejected')
-        {
-            res.json({Rejected_Clubs:joinClubsWithName});
-        }
+// router.get('/getjoinedclubbyemail', verifyToken, async (req, res) => {
+//     try {
+//         const {email}=req.user;
+//         const User=await Signup.findOne({email});
+//         const joinClub = await JoinClub.find({joinedBy: email});
+//         if (!joinClub) {
+//             return res.status(404).json({ message: 'Join club record not found' });
+//         }
+//         // Add user's name to each joinClub record
+//         const joinClubsWithName = joinClub.map(joinClub => ({
+//             ...joinClub._doc,
+//             joinedBy: User.name
+//         }));
+//         if(joinClubsWithName.decision=='Requested')
+//         {
+//             res.json({Requested_Clubs: joinClubsWithName});
+//         }
+//         else if(joinClubsWithName.decision=='Accepted')
+//         {
+//             res.json({Accepeted_Clubs: joinClubsWithName});
+//         }
+//         else if(joinClubsWithName.decision=='Rejected')
+//         {
+//             res.json({Rejected_Clubs:joinClubsWithName});
+//         }
 
-        //res.json({JoinedClubs: joinClubsWithName});
-        //res.json(joinClub);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching joinClub record', error });
-    }
-});
+//         //res.json({JoinedClubs: joinClubsWithName});
+//         //res.json(joinClub);
+//     } catch (error) {
+//         res.status(500).json({ message: 'Error fetching joinClub record', error });
+//     }
+// });
 
 
-// Get a single joinClub record by email
-router.get('/getjoinedclubbyclubname', verifyToken, async (req, res) => {
-    try {
-        const {email}=req.user;
-        const User=await Signup.findOne({email});
-        const clubs=await Club.findOne({contactEmail: email});
-        const joinClub = await JoinClub.find(clubName);
+// // Get a single joinClub record by email
+// router.get('/getjoinedclubbyclubname', verifyToken, async (req, res) => {
+//     try {
+//         const {email}=req.user;
+//         const User=await Signup.findOne({email});
+//         const clubs=await Club.findOne({contactEmail: email});
+//         const joinClub = await JoinClub.find(clubName);
 
-        if(User.email===clubs.contactEmail){
-            if (!joinClub) {
-                return res.status(404).json({ message: 'Join club record not found' });
-            }
-            if(joinClub.clubName===clubs.clubName){
-                // Add user's name to each joinClub record
-                const joinClubsWithName = joinClub.map(joinClub => ({
-                ...joinClub._doc,
-                joinedBy: User.name
-            }));
-            if(joinClubsWithName.decision=='Requested')
-                {
-                    res.json({Requested_Clubs: joinClubsWithName});
-                }
-                else if(joinClubsWithName.decision=='Accepted')
-                {
-                    res.json({Accepeted_Clubs: joinClubsWithName});
-                }
-                else if(joinClubsWithName.decision=='Rejected')
-                {
-                    res.json({Rejected_Clubs:joinClubsWithName});
-                }
-            }
+//         if(User.email===clubs.contactEmail){
+//             if (!joinClub) {
+//                 return res.status(404).json({ message: 'Join club record not found' });
+//             }
+//             if(joinClub.clubName===clubs.clubName){
+//                 // Add user's name to each joinClub record
+//                 const joinClubsWithName = joinClub.map(joinClub => ({
+//                 ...joinClub._doc,
+//                 joinedBy: User.name
+//             }));
+//             if(joinClubsWithName.decision=='Requested')
+//                 {
+//                     res.json({Requested_Clubs: joinClubsWithName});
+//                 }
+//                 else if(joinClubsWithName.decision=='Accepted')
+//                 {
+//                     res.json({Accepeted_Clubs: joinClubsWithName});
+//                 }
+//                 else if(joinClubsWithName.decision=='Rejected')
+//                 {
+//                     res.json({Rejected_Clubs:joinClubsWithName});
+//                 }
+//             }
            
-        }
+//         }
         
 
-        //res.json({JoinedClubs: joinClubsWithName});
-        //res.json(joinClub);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching joinClub record', error });
-    }
-});
+//         //res.json({JoinedClubs: joinClubsWithName});
+//         //res.json(joinClub);
+//     } catch (error) {
+//         res.status(500).json({ message: 'Error fetching joinClub record', error });
+//     }
+// });
 
 
 

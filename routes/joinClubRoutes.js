@@ -14,7 +14,9 @@ router.post('/joinclub', verifyToken, async (req, res) => {
             clubStatus: req.body.clubStatus,
             clubName: req.body.clubName,
             reason: req.body.reason,
+            rollno: req.body.rollno,
             joinedDate: formattedDate
+            
         });
         await newJoinClub.save();
         res.status(201).json({ message: 'New club joined successfully', joinClub: newJoinClub });

@@ -86,6 +86,20 @@ router.put('/enrollmentUpdate/:id', async (req, res) => {
 });
 
 
+
+router.get('/subjects/:id', async (req, res) => {
+  try {
+    const subject = await Enrollment.findOne({ 'subjects._id': req.params.id });
+    if (!subject) {
+      return res.status(404).send({ message: 'Subject not found' });
+    }
+    res.send(subject.subjects[0]);
+  } catch (error) {
+    res.status(500).send({ message: 'Server Error' });
+  }
+});
+
+
 router.delete('/enrollmentDelete/:id', async (req, res) => {
   try {
     const enrollment = await Enrollment.findByIdAndDelete(req.params.id);

@@ -28,10 +28,10 @@ router.post('/signup', async (req, res) => {
     }
 })
 
-// router.get('/getUserData', async (req, res) => {
-//     const userData = await userRegister.find();
-//     res.json({ userData: userData });
-// })
+router.get('/getUserData', async (req, res) => {
+    const userData = await userRegister.find();
+    res.json({ userData: userData });
+})
 
 router.get('/user/faculty', async (req, res) => {
     try {

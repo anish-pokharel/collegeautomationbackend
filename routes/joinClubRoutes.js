@@ -36,20 +36,22 @@ router.get('/joinclub', verifyToken, async (req, res) => {
     }
 });
 
-// Get a single joinClub record by email
+// Get joinClubs record by email
 router.get('/getjoinedclubbyemail', verifyToken, async (req, res) => {
     try {
-        const {email}=req.user;
-        const User=await Signup.findOne({email});
-        const joinClub = await JoinClub.find({joinedBy: email});
-        if (!joinClub || joinClub.length === 0) {
-            return res.status(404).json({ message: 'Join club record not found' });
+        const { email } = req.user;
+
+        // Find the user details by email
+        const user = await Signup.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
         }
-        // Add user's name to each joinClub record
-        const joinClubsWithName = joinClub.map(joinClub => ({
-            ...joinClub._doc,
-            joinedBy: User.name
-        }));
+
+        // Find the joinClub records for the user
+        const joinClubs = await JoinClub.find({ joinedBy: user.email });
+        if (!joinClubs || joinClubs.length === 0) {
+            return res.status(404).json({ message: 'Join club records not found' });
+        }
 
         // Classify join clubs by decision
         const classifiedClubs = {
@@ -58,9 +60,8 @@ router.get('/getjoinedclubbyemail', verifyToken, async (req, res) => {
             Rejected_Clubs: []
         };
 
-
-        joinClubsWithName.forEach(joinClub => {
-            if (joinClub.decision === 'Requested') {
+        joinClubs.forEach(joinClub => {
+            if (joinClub.decision === 'Pending') {
                 classifiedClubs.Requested_Clubs.push(joinClub);
             } else if (joinClub.decision === 'Accepted') {
                 classifiedClubs.Accepted_Clubs.push(joinClub);
@@ -71,28 +72,15 @@ router.get('/getjoinedclubbyemail', verifyToken, async (req, res) => {
 
         res.json(classifiedClubs);
 
-        // if(joinClubsWithName.decision=='Requested')
-        // {
-        //     res.json({Requested_Clubs: joinClubsWithName});
-        // }
-        // else if(joinClubsWithName.decision=='Accepted')
-        // {
-        //     res.json({Accepeted_Clubs: joinClubsWithName});
-        // }
-        // else if(joinClubsWithName.decision=='Rejected')
-        // {
-        //     res.json({Rejected_Clubs:joinClubsWithName});
-        // }
-
-        //res.json({JoinedClubs: joinClubsWithName});
-        //res.json(joinClub);
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching joinClub record', error });
+        console.error('Error fetching joinClub records:', error);
+        res.status(500).json({ message: 'Error fetching joinClub records', error: error.message });
     }
 });
 
 
-// Get a single joinClub record by email
+
+// Get a single joinClub record by clubname
 router.get('/getjoinedclubbyclubname', verifyToken, async (req, res) => {
     try {
         const {email}=req.user;
@@ -122,34 +110,21 @@ router.get('/getjoinedclubbyclubname', verifyToken, async (req, res) => {
                 joinedBy: User.name
             }));
 
-            // if(joinClubsWithName.decision=='Requested')
-            //     {
-            //         res.json({Requested_Clubs: joinClubsWithName});
-            //     }
-            //     else if(joinClubsWithName.decision=='Accepted')
-            //     {
-            //         res.json({Accepeted_Clubs: joinClubsWithName});
-            //     }
-            //     else if(joinClubsWithName.decision=='Rejected')
-            //     {
-            //         res.json({Rejected_Clubs:joinClubsWithName});
-            //     }
-            
            
          // Classify join clubs by decision
-         const classifiedClubs = {
+        const classifiedClubs = {
             Requested_Clubs: [],
             Accepted_Clubs: [],
             Rejected_Clubs: []
         };
 
-        joinClubsWithName.forEach(joinclub => {
-            if (joinclub.decision === 'Requested') {
-                classifiedClubs.Requested_Clubs.push(joinclub);
-            } else if (joinclub.decision === 'Accepted') {
-                classifiedClubs.Accepted_Clubs.push(joinclub);
-            } else if (joinclub.decision === 'Rejected') {
-                classifiedClubs.Rejected_Clubs.push(joinclub);
+        joinClubsWithName.forEach(joinClub => {
+            if (joinClub.decision === 'Pending') {
+                classifiedClubs.Requested_Clubs.push(joinClub);
+            } else if (joinClub.decision === 'Accepted') {
+                classifiedClubs.Accepted_Clubs.push(joinClub);
+            } else if (joinClub.decision === 'Rejected') {
+                classifiedClubs.Rejected_Clubs.push(joinClub);
             }
         });
 
@@ -162,8 +137,6 @@ router.get('/getjoinedclubbyclubname', verifyToken, async (req, res) => {
         res.status(500).json({ message: 'Error fetching joinClub record', error });
     }
 });
-
-
 
 // Update a joinClub record
 router.put('/joinclub/:id', verifyToken, async (req, res) => {

@@ -8,7 +8,9 @@ const joinClubSchema = new mongoose.Schema({
     reason:{type:String},
     joinedDate:{type: String},
     decision:{type:String,
-        enum:['Requested','Accepted','Rejected']
+        enum:['Pending','Accepted','Rejected'
+        ],
+        default:'Pending'
     }
 })
 const joinClub= mongoose.model('joinClub',joinClubSchema)

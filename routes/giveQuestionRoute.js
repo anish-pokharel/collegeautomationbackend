@@ -24,16 +24,16 @@ const storage = multer.diskStorage({
 router.post('/submit-model-question',verifyToken, upload.single('file'), async (req, res) => {
     try {
         const { subject, model_question } = req.body;
-        const {filename}= req.file;
-        if(!filename){
+        const file = req.file;
+        if(!file){
             return res.status(400).json({ error: 'No file uploaded' });
         }
         else{
+            const filename = file.filename;
             const newModelQuestion = new ModelQuestion({
-                subject: subject,
-                model_question: model_question,
+                subject,
+                model_question,
                 file:`http://localhost:3200/uploads/${filename}`
-                // Handle file upload separately and save the file path or URL to the 'file' field
             });
             const savedModelQuestion = await newModelQuestion.save();
             res.status(201).json(savedModelQuestion);

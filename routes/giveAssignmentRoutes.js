@@ -20,26 +20,31 @@ const storage = multer.diskStorage({
 
 
 
-
-router.post('/postGiveAssignments',verifyToken, upload.single("assignmentFile"), async (req, res) => {
+  router.post('/postGiveAssignments', verifyToken, upload.single('assignmentFile'), async (req, res) => {
     try {
-        
-        const {subject, assignmentName,remarks}=req.body;
-        const {filename}= req.file;
-        if(!filename){
+        console.log('File received:', req.file); 
+        const { subject, assignmentName, remarks } = req.body;
+        const file = req.file;
+
+        if (!file) {
             return res.status(400).json({ error: 'No file uploaded' });
-        }
-        else{
-            const assignment = new Assignment({subject, assignmentName,assignmentFile:`http://localhost:3200/uploads/${filename}`,remarks});
+        } else {
+            const filename = file.filename;
+            const assignment = new Assignment({
+                subject,
+                assignmentName,
+                assignmentFile: `http://localhost:3200/uploads/${filename}`,
+                remarks
+            });
             const savedAssignment = await assignment.save();
             res.status(201).json(savedAssignment);
         }
     } catch (err) {
+        console.error(err); 
         res.status(400).json({ message: err.message });
     }
 });
 
-// Get all assignments
 router.get('/getGiveAssignments', async (req, res) => {
     try {
         const assignments = await Assignment.find();
@@ -49,7 +54,7 @@ router.get('/getGiveAssignments', async (req, res) => {
     }
 });
 
-// Get a single assignment
+
 router.get('/getGiveAssignments/:id', async (req, res) => {
     try {
         const assignment = await Assignment.findById(req.params.id);
@@ -64,7 +69,7 @@ router.get('/getGiveAssignments/:id', async (req, res) => {
 
 
   
-//Read One by email
+
 router.get('/getassignmentsgivenbyemail', verifyToken, async (req, res) => {
     try {
         const { email } = req.user;
@@ -97,7 +102,7 @@ router.get('/getassignmentsgivenbyemail', verifyToken, async (req, res) => {
   });
 
 
-// Update an assignment
+
 router.put('/putGiveAssignments/:id', async (req, res) => {
     try {
         const assignment = await Assignment.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -110,7 +115,7 @@ router.put('/putGiveAssignments/:id', async (req, res) => {
     }
 });
 
-// Delete an assignment
+
 router.delete('/giveAssignments/:id', async (req, res) => {
     try {
         const assignment = await Assignment.findByIdAndDelete(req.params.id);

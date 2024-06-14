@@ -4,6 +4,7 @@ const answerAssignment = require('../models/answerAssignmentModel')
 const multer = require('multer');
 const verifyToken=require('../middleware')
 const Signup = require('../models/signupModel');
+const Enrollment=require('../models/enrollmentModel');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -71,6 +72,48 @@ router.post('/postAnswerAssignment',verifyToken, upload.single("assignmentFile")
         }
         
         const assignment = await answerAssignment.find({ rollno: user.rollno });
+         // Check if assignment is an empty array
+        if (!assignment || assignment.length === 0) {
+          return res.status(404).json({ message: 'No assignment found' });
+        }
+        res.json({ Assignment: assignment });
+       
+    } catch (error) {
+        console.error('Error fetching assignment:', error); // Log the error
+        res.status(500).json({ message: 'Error fetching assignment', error: error.message });
+    }
+  });
+
+
+
+  router.get('/getassignmentsbysubject', verifyToken, async (req, res) => {
+    try {
+        const { email } = req.user;
+        const user = await Signup.findOne({ email });
+  
+        // If the user is not found, handle the error
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+         // Find the enrollment details based on the teacher's name
+         const enrollment= await Enrollment.findOne({ "subjects.teacher": user.email });
+        
+         if (!enrollment) {
+             return res.status(404).json({ message: 'Enrollment not found' });
+         }
+         // Extract the subjects taught by this teacher
+         const subjectsTaught = enrollment.subjects
+         .filter(subject => subject.teacher === user.email)
+         .map(subject => subject.name);
+
+        if (subjectsTaught.length === 0) {
+        return res.status(404).json({ message: 'No subjects found for this teacher' });
+          }                               
+
+        // Find assignments for the subjects taught by this teacher
+        const assignment = await answerAssignment.find({ subject: { $in: subjectsTaught } });
+
+        
          // Check if assignment is an empty array
         if (!assignment || assignment.length === 0) {
           return res.status(404).json({ message: 'No assignment found' });

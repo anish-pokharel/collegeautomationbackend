@@ -5,7 +5,7 @@ const verifyToken=require('../middleware')
 const multer = require('multer');
 const Signup=require('../models/signupModel');
 const Enrollment=require('../models/enrollmentModel');
-
+const UserSubjects= require('../models/userSubjectModel');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -73,33 +73,72 @@ router.get('/getmodelquestiongivenbyemail', verifyToken, async (req, res) => {
     try {
         const { email } = req.user;
         const user = await Signup.findOne({ email });
-        const enrollment= await Enrollment.findOne(subject.teacher);
-        
+
         // If the user is not found, handle the error
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        if(user.name === enrollment.teacher){
+        // Find the enrollment details based on the teacher's name
+        const enrollment= await Enrollment.findOne({ "subjects.teacher": user.email });
+        
+        if (!enrollment) {
+             return res.status(404).json({ message: 'Enrollment not found' });
+        }
+       
+        // Extract the subjects taught by this teacher
+        const subjectsTaught = enrollment.subjects
+            .filter(subject => subject.teacher === user.email)
+            .map(subject => subject.name);
 
-            const question = await ModelQuestion.find(subject);
+        if (subjectsTaught.length === 0) {
+           return res.status(404).json({ message: 'No subjects found for this teacher' });
+           }   
+           
+        // Find question for the subjects taught by this teacher
+        const question = await ModelQuestion.find({ subject: { $in: subjectsTaught } });
 
             // Check if question is an empty array
             if (!question || question.length === 0) {
                 return res.status(404).json({ message: 'No model question found' });
                }
       
-            if(enrollment.subjects === question.subject){
-                
                 res.json({ Model_Question: question });
-            }
-        }
-       
+            
     } catch (error) {
         console.error('Error fetching question:', error); // Log the error
         res.status(500).json({ message: 'Error fetching question', error: error.message });
     }
   });
 
+
+  
+router.get('/getQuestionsByEnrolledSubject', verifyToken, async (req, res) => {
+    try {
+        const { email } = req.user;
+
+        // Find the enrollment details for the logged-in student
+        const enrollment = await UserSubjects.findOne({ userEmail: email });
+
+        if (!enrollment) {
+            return res.status(404).json({ message: 'Enrollment not found for the user' });
+        }
+
+        // Extract the subjects the student is enrolled in
+        const enrolledSubjects = enrollment.subjects.map(subject => subject.name);
+
+        // Find the questions given by the teacher for the enrolled subjects
+        const questions = await ModelQuestion.find({ subject: { $in: enrolledSubjects } });
+
+        if (!questions || questions.length === 0) {
+            return res.status(404).json({ message: 'No questions found for enrolled subjects' });
+        }
+
+        res.json({ Model_Questions: questions });
+    } catch (error) {
+        console.error('Error fetching questions:', error);
+        res.status(500).json({ message: 'Error fetching questions', error: error.message });
+    }
+});
 
 router.put('/model-questions/:id', async (req, res) => {
     try {

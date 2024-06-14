@@ -6,39 +6,43 @@ const verifyToken=require('../middleware')
 const Signup = require('../models/signupModel');
 const Enrollment=require('../models/enrollmentModel');
 
+
+
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, 'uploads/');
-    },
-    filename: (req, file, cb) => {
-      cb(null, `${Date.now()}-${file.originalname}`);
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  }
+});
+
+const upload = multer({ storage: storage });
+
+router.post('/postAnswerAssignment', verifyToken, upload.single("assignmentFile"), async (req, res) => {
+  try {
+    const { rollno } = req.user;
+    const { subject, assignment } = req.body;
+    const file = req.file;
+
+    if (!file) {
+      return res.status(400).json({ error: 'No file uploaded' });
     }
-  });
-  
-  const upload = multer({ storage: storage });
-  upload.single('assignmentFile'),
 
+    const newAssignment = new answerAssignment({
+      subject,
+      assignment,
+      assignmentFile: `http://localhost:3200/uploads/${file.filename}`,
+      rollno
+    });
 
-router.post('/postAnswerAssignment',verifyToken, upload.single("assignmentFile"),  async (req, res) => {
-    try {
-      const { rollno }= req.user;
-      const { subject, assignment } = req.body;
-      // const assignmentFile= req.file.buffer.toString('base64');
-
-       const {filename}= req.file;
-       if(!filename){
-        return res.status(400).json({ error: 'No file uploaded' });
-        }else{
-          const newAssignment = new answerAssignment({ subject, assignment, assignmentFile:`http://localhost:3200/uploads/${filename}`, rollno });
-          await newAssignment.save();
-          res.status(201).json({message:"Assignment submited successfully.", newAssignment});
-        }
-      
-    } catch (error) {
-      res.status(500).json({ message: 'Error creating assignment', error });
-    }
-  });
-  
+    await newAssignment.save();
+    res.status(201).json({ message: "Assignment submitted successfully.", newAssignment });
+  } catch (error) {
+    console.error('Error creating assignment:', error);
+    return res.status(500).json({ message: 'Error creating assignment', error });
+  }
+});
   // Read All
   router.get('/getassignments', async (req, res) => {
     try {
@@ -60,7 +64,7 @@ router.post('/postAnswerAssignment',verifyToken, upload.single("assignmentFile")
     }
   });
   
-//Read One by email
+//Read One by email  student le upload garako 
   router.get('/getassignmentsbyemail', verifyToken, async (req, res) => {
     try {
         const { email } = req.user;

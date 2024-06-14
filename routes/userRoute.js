@@ -113,4 +113,30 @@ router.get('/getuserdata', verifyToken, async (req, res) =>{
         res.status(500).json({ messgae: 'something is error', error });
     }
 })
+
+router.put('/userdata/:id', verifyToken, async (req, res) => {
+  try {
+      const updateduserdata = await userRegister.findByIdAndUpdate(
+          req.params.id,
+          req.body,
+          { new: true }
+      );
+      res.json({ message: 'Profile updated successfully', userdata: updateduserdata });
+  } catch (error) {
+      res.status(500).json({ message: 'Something went wrong', error });
+  }
+});
+
+router.put('/password/:id', verifyToken, async (req, res) => {
+  try {
+      const updateduserdata = await userRegister.findByIdAndUpdate(
+          req.params.id,
+          req.body,
+          { new: true }
+      );
+      res.json({ message: 'Password updated successfully', userdata: updateduserdata });
+  } catch (error) {
+      res.status(500).json({ message: 'Something went wrong', error });
+  }
+});
 module.exports = router;

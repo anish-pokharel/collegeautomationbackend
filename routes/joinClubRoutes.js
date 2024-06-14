@@ -13,10 +13,10 @@ router.post('/joinclub', verifyToken, async (req, res) => {
 
         const newJoinClub = new JoinClub({
             joinedBy:req.user.email,
+            joinedDate: formattedDate,
             clubStatus: req.body.clubStatus,
             clubName: req.body.clubName,
             reason: req.body.reason,
-            joinedDate: formattedDate,
             decision:req.body.decision
         });
         await newJoinClub.save();

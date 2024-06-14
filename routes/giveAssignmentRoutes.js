@@ -69,7 +69,7 @@ router.get('/getGiveAssignments/:id', async (req, res) => {
 });
 
 
-  
+  //aafai le deko assinment teacher ko ma dekichha 
 
 router.get('/getassignmentsgivenbyemail', verifyToken, async (req, res) => {
     try {

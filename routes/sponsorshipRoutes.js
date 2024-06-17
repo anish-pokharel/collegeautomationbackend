@@ -44,4 +44,19 @@ router.get('/getSponsorships',verifyToken, async (req, res) => {
 })
 
 
+router.delete('/deleteSponsorship/:id',verifyToken,async(req,res)=>{
+    try{
+        const deletedSponsorship=await Sponsorship.findByIdAndDelete(req.params.id)
+        if(!deletedSponsorship){
+            return res.status(400).json({message:'Sponsorship not Found'});
+
+        }
+        res.json({messgae:'Sponsorship deleted Sucessfully ' , sponsorship:deletedSponsorship})
+    }
+    catch(error){
+        res.status(500).json({ message: 'Error deleting Sponsorship', error });
+    }
+})
+
+
 module.exports = router;

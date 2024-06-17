@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router()
 const addClub = require('../models/addClubModel');
-const verifyToken=require('../middleware')
+const verifyToken = require('../middleware')
 
-router.post('/addClub',verifyToken,async (req, res) => {
+router.post('/addClub', verifyToken, async (req, res) => {
     try {
         const currentDate = new Date();
         const formattedDate = currentDate.toDateString();
@@ -11,10 +11,10 @@ router.post('/addClub',verifyToken,async (req, res) => {
             clubStatus: req.body.clubStatus,
             clubName: req.body.clubName,
             contactNumber: req.body.contactNumber,
-            contactEmail:req.body.contactEmail,
+            contactEmail: req.body.contactEmail,
             createdDate: formattedDate,
         });
-       
+
         await newClub.save();
         res.json({ message: 'Club saved sucessfully ' });
     }
@@ -24,10 +24,18 @@ router.post('/addClub',verifyToken,async (req, res) => {
 })
 
 
-router.get('/getClubList',verifyToken, async (req, res) => {
+router.get('/getClubList', verifyToken, async (req, res) => {
     const clubName = await addClub.find();
     res.json({ clubName: clubName });
 })
+router.get('/getClubList/:id', verifyToken, async (req, res) => {
+    try {
+        const clubListById = await addClub.findById(req.params.id);
+        res.status(200).send(clubListById);
+    } catch (error) {
+        res.status(500).json({ message: 'Something went wrong', error });
+    }
+});
 
 
 router.put('/updateClub/:id', verifyToken, async (req, res) => {

@@ -20,6 +20,7 @@ const addEvent= require('./routes/eventRoute')
 const giveAssignment= require('./routes/giveAssignmentRoutes')
 const giveQuestion= require('./routes/giveQuestionRoute')
 const AcademicRecord=require('./routes/AcademicRecordRoutes')
+const otpRoutes=require('./routes/otpRoutes')
 
 app.use(express.json());
 app.use(cors());
@@ -39,6 +40,7 @@ app.use(addEvent);
 app.use(giveAssignment);
 app.use(giveQuestion);
 app.use(AcademicRecord);
+app.use(otpRoutes);
   // Serve static files from the "uploads" directory
   app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 

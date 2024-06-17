@@ -1,8 +1,22 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
 const userRegister = require('../models/signupModel');
 const jwt = require('jsonwebtoken');
 const verifyToken=require('../middleware');
+
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  }
+});
+
+const upload = multer({ storage: storage });
+
 
 router.post('/signup', async (req, res) => {
     try {
@@ -81,7 +95,7 @@ router.post('/signin', async (req, res) => {
         }
         const userRole = userData.role;
         // const token = jwt.sign({ email: userData.email }, 'secretKey');
-        const token = jwt.sign({ email: userData.email, userId: userData._id , name: userData.name , rollno: userData.rollno}, 'secretKey');
+        const token = jwt.sign({ email: userData.email, userId: userData._id , name: userData.name , rollno: userData.rollno , password}, 'secretKey');
 
         res.json({ message: 'Login Sucessfull', role: userRole, token: token });
     }
@@ -114,14 +128,32 @@ router.get('/getuserdata', verifyToken, async (req, res) =>{
     }
 })
 
-router.put('/userdata/:id', verifyToken, async (req, res) => {
+router.put('/userdata/:id', verifyToken,upload.single("photo"), async (req, res) => {
   try {
-      const updateduserdata = await userRegister.findByIdAndUpdate(
-          req.params.id,
-          req.body,
-          { new: true }
-      );
-      res.json({ message: 'Profile updated successfully', userdata: updateduserdata });
+    const { address,biography,facebook,instagram,whatsapp,website }= req.body;
+    const file = req.file;
+    if (!file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    const updateData = {
+      address,
+      photo:`http://localhost:3200/uploads/${file.filename}`,
+      biography,
+      facebook,
+      instagram,
+      whatsapp,
+      website
+  };
+
+  const updatedUser = await userRegister.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      { new: true }
+  );
+
+  res.json({ message: 'Profile updated successfully', userdata: updatedUser });
+
   } catch (error) {
       res.status(500).json({ message: 'Something went wrong', error });
   }
@@ -129,14 +161,24 @@ router.put('/userdata/:id', verifyToken, async (req, res) => {
 
 router.put('/password/:id', verifyToken, async (req, res) => {
   try {
-      const updateduserdata = await userRegister.findByIdAndUpdate(
-          req.params.id,
-          req.body,
-          { new: true }
-      );
-      res.json({ message: 'Password updated successfully', userdata: updateduserdata });
-  } catch (error) {
+    const {oldpassword, password,confirmPassword}=req.body;
+    const user= await userRegister.findById(req.params.id);
+  if(user.password != oldpassword){
+    return res.status(400).json({ error: 'Password did not match' });
+  }
+  else{
+    const userData= { password,confirmPassword };
+    const updateduserdata = await userRegister.findByIdAndUpdate(
+      req.params.id,
+      userData,
+      { new: true }
+  );
+  res.json({ message: 'Password updated successfully', userdata: updateduserdata });
+  }
+        } catch (error) {
       res.status(500).json({ message: 'Something went wrong', error });
   }
 });
 module.exports = router;
+
+

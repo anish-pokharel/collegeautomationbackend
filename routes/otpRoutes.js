@@ -16,7 +16,6 @@ function generateOtp(length = 6) {
     return otp;
 }
 
-// Send OTP via Email
 async function sendOtp(email, otp) {
     let transporter = nodemailer.createTransport({
         service: 'Gmail',

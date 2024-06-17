@@ -9,7 +9,7 @@ const RegisterSchema= new mongoose.Schema({
     biography:{type:String},
     facebook:{type:String},
     instagram:{type:String},
-    whataspp:{type:String},
+    whatsapp:{type:String},
     website:{type:String},
     password:{type:String},
     confirmPassword:{type:String},

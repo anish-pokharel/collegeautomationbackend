@@ -1,10 +1,13 @@
 const mongoose= require('mongoose');
 
 const AttendanceSchema= new mongoose.Schema({
+    Email:{type:Number},
+    EnteredOtp:{type: String},
     Name:{type: String, required:true},
     Rollno:{type:Number},
     Subject:{type: String},
     Date:{type: Date},
+   
     Remarks:{
         type:String
     }

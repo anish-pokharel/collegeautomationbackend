@@ -1,9 +1,13 @@
+
 const mongoose = require('mongoose');
 
-const otpSchema = new mongoose.Schema({
-    studentId: { type: String, required: true, unique: true },
-    otp: { type: String, required: true },
-    createdAt: { type: Date, default: Date.now, expires: '10m' } // OTP expires in 10 minutes
+
+const studentSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  otp: String,
+  present: { type: Boolean, default: false }
 });
 
-module.exports = mongoose.model('Otp', otpSchema);
+const Students = mongoose.model('student', studentSchema);
+module.exports =Students;

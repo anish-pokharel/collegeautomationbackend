@@ -1,8 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const Otp = require('../models/otpModel');
-const Attendance = require('../models/attendanceModel');
+// const Student = require('../models/otpModel')
+const Student = require('../models/otpModel');
 const nodemailer = require('nodemailer');
+
+
+
+
 function generateOtp(length = 6) {
     const digits = '0123456789';
     let otp = '';
@@ -32,48 +36,48 @@ async function sendOtp(email, otp) {
     await transporter.sendMail(mailOptions);
 }
 
-// API to generate and send OTP
 router.post('/send-otp', async (req, res) => {
-    const { studentId, email } = req.body;
+    const { email } = req.body;
     const otp = generateOtp();
 
     try {
-        await Otp.findOneAndUpdate(
-            { studentId },
-            { otp, createdAt: Date.now() },
+        const student = await Student.findOneAndUpdate(
+            { email },
+            { otp, otpExpiration: Date.now() + 5 * 60 * 1000 }, // OTP expires in 5 minutes
             { upsert: true, new: true }
         );
         await sendOtp(email, otp);
         res.status(200).send('OTP sent');
+
     } catch (err) {
+        console.error('Error generating OTP:', err);
         res.status(500).send('Error generating OTP');
     }
 });
 
-// API to verify OTP and mark attendance
+
 router.post('/verify-otp', async (req, res) => {
-    const { studentId, enteredOtp, name, rollno, subject, remarks } = req.body;
+    const { email, otp } = req.body;
 
     try {
-        const otpRecord = await Otp.findOne({ studentId });
-        if (otpRecord && otpRecord.otp === enteredOtp) {
-            await Otp.deleteOne({ studentId });
-
-            const attendance = new Attendance({
-                Name: name,
-                Rollno: rollno,
-                Subject: subject,
-                Remarks: remarks
-            });
-
-            await attendance.save();
-
-            res.status(200).send('Attendance marked present');
+        const student = await Student.findOne({ email, otp, });
+        if (student) {
+            student.present = true;
+            await student.save();
+            res.status(200).json({ message: 'Attendance marked successfully' });
         } else {
-            res.status(400).send('Invalid OTP');
+            res.status(404).json({ error: 'Invalid OTP or email' });
         }
     } catch (err) {
-        res.status(500).send('Error verifying OTP');
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+router.get('/attendance',  async (req, res) => {
+    try {
+        const attendance = await Student.find();
+        res.json({ attendance });
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching attendance list', error });
     }
 });
 

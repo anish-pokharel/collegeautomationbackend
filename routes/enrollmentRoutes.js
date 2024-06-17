@@ -3,7 +3,7 @@ const router = express.Router();
 const Enrollment = require('../models/enrollmentModel')
 const UserSubjects  = require('../models/userSubjectModel')
 const verifyToken=require('../middleware')
-
+const Signup = require('../models/signupModel');
 
 
 router.post('/enrollmentCreate', async (req, res) => {
@@ -41,6 +41,7 @@ router.get('/enrollmentData/subjects', verifyToken, async (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 router.get('/subjectsList', verifyToken, async (req, res) => {
   try {
     // const { email } = req.user;
@@ -90,6 +91,41 @@ router.get('/enrollmentDatabyEmail',verifyToken, async (req, res) => {
     res.json(subject);
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+});
+
+//to get data of enrolled student in particular subject in teacher dashboard
+router.get('/enrollmentDatabyEnrolledsubject', verifyToken, async (req, res) => {
+  try {
+    const { email } = req.user;
+    const user = await Signup.findOne({ email });
+  
+        // If the user is not found, handle the error
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+         // Find the enrollment details based on the teacher's name
+         const enrollment= await Enrollment.findOne({ "subjects.teacher": user.email });
+        
+         if (!enrollment) {
+             return res.status(404).json({ message: 'Enrollment not found' });
+         }
+         // Extract the subjects taught by this teacher
+         const subjectsTaught = enrollment.subjects
+         .filter(subject => subject.teacher === user.email)
+         .map(subject => subject.name);
+
+        if (subjectsTaught.length === 0) {
+          return res.status(404).json({ message: 'No subjects found for this teacher' });
+        } 
+        const student = await UserSubjects.findOne({ "subjects.name": { $in: subjectsTaught } });
+        const users = await Signup.find({email: student.userEmail}, 'name email rollno');
+        if(!users){
+          return res.status(404).json({ message: 'No students found for this teacher' });
+        }
+      return res.status(200).json({message:'Enrolled students in are:',  users  });
+  } catch (error) {
+      res.status(500).json({ error: 'Internal Server Error', error:error.message });
   }
 });
 

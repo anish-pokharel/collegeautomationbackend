@@ -21,6 +21,8 @@ const giveAssignment= require('./routes/giveAssignmentRoutes')
 const giveQuestion= require('./routes/giveQuestionRoute')
 const AcademicRecord=require('./routes/AcademicRecordRoutes')
 const otpRoutes=require('./routes/otpRoutes')
+const internalExamRoutes=require('./routes/internalExamRoutes')
+const excelRoutes=require('./routes/excelRoutes')
 
 app.use(express.json());
 app.use(cors());
@@ -41,6 +43,8 @@ app.use(giveAssignment);
 app.use(giveQuestion);
 app.use(AcademicRecord);
 app.use(otpRoutes);
+app.use(internalExamRoutes);
+app.use(excelRoutes);
   // Serve static files from the "uploads" directory
   app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 

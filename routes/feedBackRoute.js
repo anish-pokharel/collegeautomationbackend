@@ -28,19 +28,30 @@ router.get('/getFeedbackList', verifyToken, async (req, res) => {
     }
 });
 
-// router.get('/getFeedbackbyemail', verifyToken, async (req, res) => {
-//     try {
-//         const {email}=req.user;
-//         const User=await Signup.findOne({email});
-//         const feedback = await FeedbackModel.find({feedbackBy:email});
-//         if (!feedback) {
-//             return res.status(404).json({ message: 'Feedback not found' });
-//         }
-//         res.json({ feedback });
-//     } catch (error) {
-//         res.status(500).json({ message: 'Error fetching feedback', error });
-//     }
-// });
+router.get('/getFeedbackbyrole', verifyToken, async (req, res) => {
+    try {
+        const {email}=req.user;
+        const User=await Signup.findOne({email});
+        if (!User) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        const feedback = await FeedbackModel.find({feedbackFor:User.email});
+        if (!feedback || feedback.length === 0) {
+            return res.status(404).json({ message: 'Feedback not found' });
+        }
+        
+        const feedbackByName = await Promise.all(feedback.map(async fb => {
+            const sentby = await Signup.findOne({ email: fb.feedbackBy });
+            return {
+                ...fb._doc,
+               feedbackBy: sentby.name
+            };
+        }));
+        res.json({ feedbackByName });
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching feedback', error:error.message });
+    }
+});
 
 router.get('/getFeedbackbyemail', verifyToken, async (req, res) => {
     try {

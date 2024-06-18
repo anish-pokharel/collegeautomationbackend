@@ -118,14 +118,17 @@ router.put('/putsponsorship:id', verifyToken, async (req, res) => {
 });
 
 // Delete
-router.delete('/delsponsorship:id', verifyToken, async (req, res) => {
+router.delete('/delsponsorship/:id', verifyToken, async (req, res) => {
   try {
     const deletedForm = await Form.findByIdAndDelete(req.params.id);
-    if (!deletedForm) return res.status(404).json({ message: 'Form not found' });
+    if (!deletedForm) {
+      return res.status(404).json({ message: 'Form not found' });
+    }
     res.json({ message: 'Form deleted', deletedForm });
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting form', error });
+    res.status(500).json({ message: 'Error deleting form', error: error.message });
   }
 });
+
 
 module.exports = router;

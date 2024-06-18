@@ -205,7 +205,23 @@ router.get('/getjoinedclubbyclubname', verifyToken, async (req, res) => {
 
 // Update a joinClub record
 
-
+router.put('/joinclubbyid/:id', verifyToken, async (req, res) => {
+    try {
+        const {decision}=req.body;
+        const updatedJoinClub = await JoinClub.findByIdAndUpdate(req.params.id, {decision}, { new: true });
+        if (!updatedJoinClub) {
+            return res.status(404).json({ message: 'Join club record not found' });
+        }
+        if(updatedJoinClub.decision=="Accepted"){
+            res.json({ message: 'Join club requested accepted !!', updatedJoinClub });
+        }
+        else if(updatedJoinClub.decision=="Rejected"){
+            res.json({ message: 'Join club requested rejected !!', updatedJoinClub });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating joinClub record', error });
+    }
+});
 
 router.put('/joinclub/:id', verifyToken, async (req, res) => {
     try {

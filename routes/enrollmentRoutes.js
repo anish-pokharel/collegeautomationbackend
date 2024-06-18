@@ -95,6 +95,23 @@ router.get('/enrollmentDatabyEmail',verifyToken, async (req, res) => {
   }
 });
 
+// to delete the enrollment of the semester by the students 
+router.delete('/enrollmentDatabyEmail',verifyToken, async (req, res) => {
+  try {
+    const userEmail = req.user.email;
+    const subject = await UserSubjects.findOneAndDelete({ userEmail: userEmail });
+    if (!subject) {
+      return res.status(404).json({ message: 'subject not found' });
+    }
+    res.json({message:"Enrolled subject deleted successfully",subject});
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+
+
+
 //to get data of enrolled student in particular subject in teacher dashboard
 router.get('/enrollmentDatabyEnrolledsubject', verifyToken, async (req, res) => {
   try {

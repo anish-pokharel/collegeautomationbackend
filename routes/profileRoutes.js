@@ -39,5 +39,20 @@ const storage = multer.diskStorage({
       res.status(500).json({ message: 'Error saving profile', error: err.message });
     }
   });
+  router.get('/profile', verifyToken, async (req, res) => {
+    try {
+      const rollno = req.user.rollno;
+      const profile = await Profile.findOne({ rollno: rollno });
+  
+      if (!profile) {
+        return res.status(404).json({ message: 'Profile not found' });
+      }
+  
+      res.status(200).json(profile);
+    } catch (err) {
+      res.status(500).json({ message: 'Error fetching profile', error: err.message });
+    }
+  });
+  
   
   module.exports = router;

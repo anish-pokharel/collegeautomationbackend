@@ -24,7 +24,7 @@ const storage = multer.diskStorage({
   router.post('/postGiveAssignments', verifyToken, upload.single('assignmentFile'), async (req, res) => {
     try {
         console.log('File received:', req.file); 
-        const { subject, assignmentName, remarks } = req.body;
+        const { subject, assignmentName, dueDate ,remarks } = req.body;
         const file = req.file;
 
         if (!file) {
@@ -35,7 +35,8 @@ const storage = multer.diskStorage({
                 subject,
                 assignmentName,
                 assignmentFile: `http://localhost:3200/uploads/${filename}`,
-                remarks
+                remarks,
+                dueDate 
             });
             const savedAssignment = await assignment.save();
             res.status(201).json(savedAssignment);

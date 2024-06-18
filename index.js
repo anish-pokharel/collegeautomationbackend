@@ -23,6 +23,7 @@ const AcademicRecord=require('./routes/AcademicRecordRoutes')
 const otpRoutes=require('./routes/otpRoutes')
 const internalExamRoutes=require('./routes/internalExamRoutes')
 const excelRoutes=require('./routes/excelRoutes')
+const profileRoutes=require('./routes/profileRoutes')
 
 app.use(express.json());
 app.use(cors());
@@ -44,6 +45,7 @@ app.use(giveQuestion);
 app.use(AcademicRecord);
 app.use(otpRoutes);
 app.use(internalExamRoutes);
+app.use(profileRoutes);
 app.use(excelRoutes);
   // Serve static files from the "uploads" directory
   app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

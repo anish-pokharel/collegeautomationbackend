@@ -7,7 +7,8 @@ const formSponsorshipSchema = new mongoose.Schema({
   topic: { type: String, required: true },
   money: { type: String, required: true },
   reason: { type: String, required: true },
-  decision:{type: String, required:true}
+  decision:{type: String, required:true},
+  sponsor:{type:String,required:true}
 });
 
 const SponsorshipForm = mongoose.model('sponsorshipForm', formSponsorshipSchema);

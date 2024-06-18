@@ -14,7 +14,8 @@ router.post('/postsponsorship', verifyToken, async (req, res) => {
       money: req.body.money,
       topic: req.body.topic,
       reason: req.body.reason,
-      decision:req.body.decision
+      decision:req.body.decision,
+      sponsor:req.body.sponsor
     });
     await newForm.save();
     res.status(201).json({message: "Sponsorship requested" ,newForm});
@@ -64,6 +65,42 @@ router.get('/getsponsorshipbyemail', verifyToken, async (req, res) => {
   } catch (error) {
       console.error('Error fetching sponsorship details:', error); // Log the error
       res.status(500).json({ message: 'Error fetching sponsorship details', error: error.message });
+  }
+});
+
+
+
+router.get('/getsponsorshipbyrole', verifyToken, async (req, res) => {
+  try {
+      const {email}=req.user;
+      const User=await Signup.findOne({email});
+      if (!User) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+      const sponsorship = await Form.find({sponsor:User.email});
+      if (!sponsorship || sponsorship.length === 0) {
+          return res.status(404).json({ message: 'Sponsor not found' });
+      }
+      res.json({ sponsorship });
+  } catch (error) {
+      res.status(500).json({ message: 'Error fetching sponsorship details', error:error.message });
+  }
+});
+
+
+router.put('/putsponsorshipbyid/:id', verifyToken, async (req, res) => {
+  try {
+    const {  decision } = req.body;
+    const updatedForm = await Form.findByIdAndUpdate(req.params.id, {decision}, { new: true });
+    if (!updatedForm) return res.status(404).json({ message: 'Form not found' });
+    if(updatedForm.decision=="accepted"){
+      res.json({message: "Sponsorship request accepted!! ",updatedForm});
+    }
+    else if(updatedForm.decision == "rejected"){
+      res.json({message: "Sponsorship request rejected!! ",updatedForm});
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating form', error });
   }
 });
 

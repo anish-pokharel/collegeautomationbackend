@@ -86,7 +86,7 @@ router.get('/getjoinedclubbyemail', verifyToken, async (req, res) => {
 
 
 // Get joinClub records by clubname
-router.get('/getjoinedclubbyclubname/:clubName', verifyToken, async (req, res) => {
+router.get('/getjoinedclubbyclubname', verifyToken, async (req, res) => {
     try {
         const { email } = req.user;
         const user = await Signup.findOne({ email });
@@ -99,7 +99,7 @@ router.get('/getjoinedclubbyclubname/:clubName', verifyToken, async (req, res) =
             return res.status(403).json({ message: 'Access Denied: Only club secretaries can access this data' });
         }
 
-        const club = await Club.findOne({ clubName: req.params.clubName, contactEmail: user.email });
+        const club = await Club.findOne({ contactEmail: user.email });
 
         if (!club) {
             return res.status(404).json({ message: 'Club not found or you do not have access to this club' });
@@ -204,6 +204,7 @@ router.get('/getjoinedclubbyclubname/:clubName', verifyToken, async (req, res) =
 // });
 
 // Update a joinClub record
+
 
 
 router.put('/joinclub/:id', verifyToken, async (req, res) => {

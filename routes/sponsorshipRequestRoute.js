@@ -105,7 +105,7 @@ router.put('/putsponsorshipbyid/:id', verifyToken, async (req, res) => {
 });
 
 // Update
-router.put('/putsponsorship:id', verifyToken, async (req, res) => {
+router.put('/putsponsorship/:id', verifyToken, async (req, res) => {
   try {
     const {name}=req.user;
     const {  faculty, semester, topic, money, reason } = req.body;
@@ -118,7 +118,7 @@ router.put('/putsponsorship:id', verifyToken, async (req, res) => {
 });
 
 // Delete
-router.delete('/delsponsorship:id', verifyToken, async (req, res) => {
+router.delete('/delsponsorship/:id', verifyToken, async (req, res) => {
   try {
     const deletedForm = await Form.findByIdAndDelete(req.params.id);
     if (!deletedForm) return res.status(404).json({ message: 'Form not found' });

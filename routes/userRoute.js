@@ -167,14 +167,19 @@ router.put('/password/:id', verifyToken, async (req, res) => {
     return res.status(400).json({ error: 'Password did not match' });
   }
   else{
-    const userData= { password,confirmPassword };
-    const updateduserdata = await userRegister.findByIdAndUpdate(
-      req.params.id,
-      userData,
-      { new: true }
-  );
-  res.json({ message: 'Password updated successfully', userdata: updateduserdata });
-  }
+    if(password != confirmPassword){
+      return res.status(404).json({ error: 'New Password did not match' });
+    }else{
+      const userData= { password,confirmPassword };
+      const updateduserdata = await userRegister.findByIdAndUpdate(
+        req.params.id,
+        userData,
+        { new: true }
+    );
+    res.json({ message: 'Password updated successfully', userdata: updateduserdata });
+  
+    }
+      }
         } catch (error) {
       res.status(500).json({ message: 'Something went wrong', error });
   }

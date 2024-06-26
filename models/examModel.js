@@ -5,7 +5,7 @@ const excelDataSchema = new mongoose.Schema({
     type: String,
     required: false,  
   },
-  age: {
+  rollno: {
     type: Number,
     required: false,  
   },

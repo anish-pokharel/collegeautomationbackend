@@ -8,13 +8,16 @@ const Attendance = require('../models/attendanceModel');
 
 router.post('/attendance', verifyToken, async (req, res) => {
     try {
+        const currentDate = new Date();
+        const formattedDate = currentDate.toDateString(); // Format as 'Fri Jun 07 2024'
+
         const newAttendance = new Attendance({
             Name: req.body.Name,
             Program: req.body.Program,
             Semester: req.body.Semester,
             Rollno:req.body.Rollno,
             Subject: req.body.Subject,
-            Date: Date.now(),
+            Date: formattedDate,
             Remarks:req.body.Remarks
         });
        

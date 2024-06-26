@@ -136,8 +136,12 @@ router.get('/enrollmentDatabyEnrolledsubject', verifyToken, async (req, res) => 
         if (subjectsTaught.length === 0) {
           return res.status(404).json({ message: 'No subjects found for this teacher' });
         } 
-        const student = await UserSubjects.findOne({ "subjects.name": { $in: subjectsTaught } });
-        const users = await Signup.find({email: student.userEmail}, 'name email rollno');
+        const student = await UserSubjects.find({ "subjects.name": { $in: subjectsTaught } });
+        // Extract user emails from the student records
+    const studentEmails = student.map(students => students.userEmail);
+
+    // Find details of all these students
+    const users = await Signup.find({ email: { $in: studentEmails } }, 'name email rollno');
         if(!users){
           return res.status(404).json({ message: 'No students found for this teacher' });
         }

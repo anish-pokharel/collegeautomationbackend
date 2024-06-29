@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const enrollmentSchema = new mongoose.Schema({
     enrollment_key: { type: String, required: true },
     semester: { type: String, required: true },
+    department: { type: String, required: true },
     subjects: [{
       name: {
         type: String,

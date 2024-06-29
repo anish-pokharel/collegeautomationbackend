@@ -8,7 +8,7 @@ const Signup = require('../models/signupModel');
 
 router.post('/enrollmentCreate', async (req, res) => {
   try {
-    const { enrollmentKey,semester, subjects } = req.body;
+    const { enrollmentKey,semester, subjects,department } = req.body;
     const enrollment = new Enrollment({
       enrollment_key: enrollmentKey,
       semester: semester,

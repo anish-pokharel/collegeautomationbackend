@@ -1,12 +1,20 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const studentInternalSchema = new mongoose.Schema({
-  name: String,
-  email: String,
-  rollno: String,
-  marks: Number,
+const ValuationSchema = new Schema({
+  type: {
+    type: String,
+    required: true,
+    enum: ['marks', 'valuation']
+  },
+  filePath: {
+    type: String,
+    required: true
+  },
+  uploadDate: {
+    type: Date,
+    default: Date.now
+  }
 });
 
-const StudentInternalExam = mongoose.model('StudentInternalExam', studentInternalSchema);
-
-module.exports = StudentInternalExam;
+module.exports = mongoose.model('Valuation', ValuationSchema);

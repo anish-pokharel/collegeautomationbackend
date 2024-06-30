@@ -42,7 +42,7 @@ router.post('/send-otp', async (req, res) => {
     try {
         const student = await Student.findOneAndUpdate(
             { email },
-            { otp, otpExpiration: Date.now() + 5 * 60 * 1000 }, // OTP expires in 5 minutes
+            { otp, otpExpiration: Date.now() + 5 * 60 * 1000 }, 
             { upsert: true, new: true }
         );
         await sendOtp(email, otp);

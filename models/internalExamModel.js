@@ -14,6 +14,10 @@ const ValuationSchema = new Schema({
   uploadDate: {
     type: Date,
     default: Date.now
+  },
+  subject:{
+    type:String,
+    required: true
   }
 });
 

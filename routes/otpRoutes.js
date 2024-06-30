@@ -16,7 +16,7 @@ function generateOtp(length = 6) {
     return otp;
 }
 
-async function sendOtp(email, otp) {
+async function sendOtp(email, otp, date) {
     let transporter = nodemailer.createTransport({
         service: 'Gmail',
         auth: {
@@ -29,23 +29,32 @@ async function sendOtp(email, otp) {
         from: 'karthikpokharel@gmail.com',
         to: email,
         subject: 'Your OTP for Attendance',
-        text: `Your OTP is ${otp}. Please enter this to mark your attendance.`
+        text: `Your OTP is ${otp}. Please enter this to mark your attendance.\n ${date}`,
+        
     };
 
     await transporter.sendMail(mailOptions);
 }
 
 router.post('/send-otp', async (req, res) => {
+    const currentDate = new Date();
+    const formattedDate = currentDate.toDateString(); // Format as 'Fri Jun 07 2024'
+
     const { email } = req.body;
     const otp = generateOtp();
-
+   // const {date} = formattedDate;
+    //console.log(date);
     try {
         const student = await Student.findOneAndUpdate(
             { email },
-            { otp, otpExpiration: Date.now() + 5 * 60 * 1000 }, 
+            //{ date: formattedDate},
+            { otp, otpExpiration: Date.now() + 5 * 60 * 1000, present: false, 
+                date: formattedDate  }, 
+            //{present:false},
             { upsert: true, new: true }
+            
         );
-        await sendOtp(email, otp);
+        await sendOtp(email, otp, formattedDate);
         res.status(200).send('OTP sent');
 
     } catch (err) {
@@ -56,10 +65,11 @@ router.post('/send-otp', async (req, res) => {
 
 
 router.post('/verify-otp', async (req, res) => {
-    const { email, otp } = req.body;
-
+    const { email, otp  } = req.body;
+    const currentDate = new Date();
+    const formattedDate = currentDate.toDateString(); 
     try {
-        const student = await Student.findOne({ email, otp, });
+        const student = await Student.findOne({ email, otp, date:formattedDate});
         if (student) {
             student.present = true;
             await student.save();

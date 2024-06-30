@@ -22,18 +22,21 @@ const upload = multer({ storage: storage });
 router.post('/postAnswerAssignment', verifyToken, upload.single("assignmentFile"), async (req, res) => {
   try {
     const { rollno } = req.user;
-    const { subject, assignment } = req.body;
+    const { subject, assignment} = req.body;
     const file = req.file;
 
     if (!file) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
-
+    // if(date != submitteddate){
+    //   return res.status(400).json({ error: 'submission date not matched' });
+    // }
     const newAssignment = new answerAssignment({
       subject,
       assignment,
       assignmentFile: `http://localhost:3200/uploads/${file.filename}`,
-      rollno
+      rollno,
+      submitteddate:Date.now()
     });
 
     await newAssignment.save();

@@ -12,6 +12,11 @@ const verifyToken = require('../middleware');
 
 router.post('/postDepartments', async (req, res) => {
     try {
+        const existingDepartment = await createDepartmentListModel.findOne({ hod: req.body.hod });
+        if (existingDepartment) {
+            return res.status(400).json({ message: 'This teacher is already the head of a department.' });
+        }
+
         const department = new createDepartmentListModel(req.body);
         await department.save();
         res.status(201).send(department);

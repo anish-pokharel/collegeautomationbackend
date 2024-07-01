@@ -8,17 +8,28 @@ const Club=require('../models/addClubModel');
 // Create a new joinClub record
 router.post('/joinclub', verifyToken, async (req, res) => {
     try {
+        // Check if the user has already joined the same club
+        const existingJoinClub = await JoinClub.findOne({
+            joinedBy: req.user.email,
+            clubName: req.body.clubName
+        });
+
+        if (existingJoinClub) {
+            return res.status(400).json({ message: 'You have already joined this club' });
+        }
+
         const currentDate = new Date();
         const formattedDate = currentDate.toDateString(); // Format as 'Fri Jun 07 2024'
 
         const newJoinClub = new JoinClub({
-            joinedBy:req.user.email,
+            joinedBy: req.user.email,
             joinedDate: formattedDate,
             clubStatus: req.body.clubStatus,
             clubName: req.body.clubName,
             reason: req.body.reason,
-            decision:req.body.decision
+            decision: req.body.decision
         });
+        
         await newJoinClub.save();
         res.status(201).json({ message: 'New club joined successfully', joinClub: newJoinClub });
     } catch (error) {

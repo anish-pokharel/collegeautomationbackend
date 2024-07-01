@@ -56,7 +56,7 @@ router.post('/internalUpload',verifyToken, async(req, res) => {
         if (!teacher) {
           return res.status(404).send('Teacher not found in enrollment');
         }
-        const { subject}=req.body;s
+        const { subject}=req.body;
         //console.log(teacher);
         const Subjects = teacher.subjects.find(sub => sub.name === subject);
         if (!Subjects) {

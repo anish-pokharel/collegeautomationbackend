@@ -133,7 +133,15 @@ router.put('/userdata/:id', verifyToken,upload.single("photo"), async (req, res)
     const { address,biography,facebook,instagram,whatsapp,website }= req.body;
     const file = req.file;
     if (!file) {
-      return res.status(400).json({ error: 'No file uploaded' });
+      res.status(400).json({ error: 'No file uploaded' });
+      const updateData = {
+        address,
+        biography,
+        facebook,
+        instagram,
+        whatsapp,
+        website
+    };
     }
 
     const updateData = {

@@ -154,10 +154,12 @@ router.get('/enrollmentDatabyEnrolledsubject', verifyToken, async (req, res) => 
 
 router.put('/enrollmentUpdate/:id', async (req, res) => {
   try {
-    const { enrollmentKey, subjects } = req.body;
+    const { enrollmentKey, subjects, semester,department } = req.body;
     const updatedEnrollment = await Enrollment.findByIdAndUpdate(req.params.id, {
       enrollment_key: enrollmentKey,
-      subjects: subjects
+      subjects: subjects,
+      semester,
+      department
     }, { new: true });
     res.json(updatedEnrollment);
   } catch (err) {

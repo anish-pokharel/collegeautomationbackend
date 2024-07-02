@@ -25,6 +25,7 @@ const internalExamRoutes=require('./routes/internalExamRoutes')
 const excelRoutes=require('./routes/excelRoutes')
 const profileRoutes=require('./routes/profileRoutes')
 const InternalMarksPredictRoutes=require('./routes/InternalMarksPredictRoutes')
+const idCard=require('./routes/idcardRoutes');
 
 app.use(express.json());
 app.use(cors());
@@ -48,7 +49,9 @@ app.use(otpRoutes);
 app.use(internalExamRoutes);
 app.use(profileRoutes);
 app.use(InternalMarksPredictRoutes);
+app.use(idCard);
 app.use(excelRoutes);
+
   // Serve static files from the "uploads" directory
   app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 

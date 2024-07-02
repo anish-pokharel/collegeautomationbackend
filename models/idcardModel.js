@@ -7,7 +7,8 @@ const idcardSchema= new mongoose.Schema({
     semester:{ type: String, required:true},
     contactNo:{ type:Number, required:true},
     department: { type: String, required:true},
-    validuntil:{ type: String, required: true}
+    validuntil:{ type: String},
+    reason:{ type: String, required:true}
 })
 const IdCard = mongoose.model('IdCard', idcardSchema)
 module.exports = IdCard;

@@ -8,10 +8,11 @@ const Signup = require('../models/signupModel');
 
 router.post('/enrollmentCreate', async (req, res) => {
   try {
-    const { enrollmentKey,semester, subjects,department } = req.body;
+    const { enrollmentKey,semester,department, subjects } = req.body;
     const enrollment = new Enrollment({
       enrollment_key: enrollmentKey,
       semester: semester,
+      department: department,
       subjects: subjects,
     });
     const savedEnrollment = await enrollment.save();

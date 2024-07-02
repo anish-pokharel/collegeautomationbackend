@@ -36,32 +36,32 @@ async function sendOtp(email, otp, date) {
     await transporter.sendMail(mailOptions);
 }
 
-router.post('/send-otp', async (req, res) => {
-    const currentDate = new Date();
-    const formattedDate = currentDate.toDateString(); // Format as 'Fri Jun 07 2024'
+// router.post('/send-otp', async (req, res) => {
+//     const currentDate = new Date();
+//     const formattedDate = currentDate.toDateString(); // Format as 'Fri Jun 07 2024'
 
-    const { email } = req.body;
-    const otp = generateOtp();
-   // const {date} = formattedDate;
-    //console.log(date);
-    try {
-        const student = await Student.findOneAndUpdate(
-            { email },
-            //{ date: formattedDate},
-            { otp, otpExpiration: Date.now() + 5 * 60 * 1000, present: false, 
-                date: formattedDate  }, 
-            //{present:false},
-            { upsert: true, new: true }
+//     const { email } = req.body;
+//     const otp = generateOtp();
+//    // const {date} = formattedDate;
+//     //console.log(date);
+//     try {
+//         const student = await Student.findOneAndUpdate(
+//             { email },
+//             //{ date: formattedDate},
+//             { otp, otpExpiration: Date.now() + 5 * 60 * 1000, present: false, 
+//                 date: formattedDate  }, 
+//             //{present:false},
+//             { upsert: true, new: true }
             
-        );
-        await sendOtp(email, otp, formattedDate);
-        res.status(200).send('OTP sent');
+//         );
+//         await sendOtp(email, otp, formattedDate);
+//         res.status(200).send('OTP sent');
 
-    } catch (err) {
-        console.error('Error generating OTP:', err);
-        res.status(500).send('Error generating OTP');
-    }
-});
+//     } catch (err) {
+//         console.error('Error generating OTP:', err);
+//         res.status(500).send('Error generating OTP');
+//     }
+// });
 
 
 router.post('/verify-otp', async (req, res) => {
@@ -87,6 +87,34 @@ router.get('/attendance',  async (req, res) => {
         res.json({ attendance });
     } catch (error) {
         res.status(500).json({ message: 'Error fetching attendance list', error });
+    }
+});
+
+router.post('/sendotp', async (req, res) => {
+    const currentDate = new Date();
+    const formattedDate = currentDate.toDateString(); // Format as 'Fri Jun 07 2024'
+
+    const { email } = req.body;
+    const otp = generateOtp();
+   // const {date} = formattedDate;
+    //console.log(date);
+    try {
+        const student = new Student({
+             email ,
+            //{ date: formattedDate},
+             otp, otpExpiration: Date.now() + 5 * 60 * 1000, present: false, 
+                date: formattedDate  , 
+            //{present:false},
+            //{ upsert: true, new: true }
+            
+    });
+        await sendOtp(email, otp, formattedDate);
+        await student.save();
+        res.status(200).send('OTP sent');
+
+    } catch (err) {
+        console.error('Error generating OTP:', err);
+        res.status(500).send('Error generating OTP');
     }
 });
 

@@ -17,7 +17,8 @@ const RegisterSchema= new mongoose.Schema({
         type:String,
         enum:['student','faculty','secretary','admin'],
         default:'student'
-    }
+    },
+    isVerified:{ type:Boolean, required:true }
 })
 const Register = mongoose.model('register',RegisterSchema)
 module.exports = Register;

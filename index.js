@@ -26,6 +26,7 @@ const excelRoutes=require('./routes/excelRoutes')
 const profileRoutes=require('./routes/profileRoutes')
 const InternalMarksPredictRoutes=require('./routes/InternalMarksPredictRoutes')
 const idCard=require('./routes/idcardRoutes');
+const sendemail=require('./routes/sendemailRoutes');
 
 app.use(express.json());
 app.use(cors());
@@ -51,6 +52,7 @@ app.use(profileRoutes);
 app.use(InternalMarksPredictRoutes);
 app.use(idCard);
 app.use(excelRoutes);
+app.use(sendemail);
 
   // Serve static files from the "uploads" directory
   app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

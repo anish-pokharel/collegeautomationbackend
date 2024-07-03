@@ -181,6 +181,18 @@ router.put('/password/:id', verifyToken, async (req, res) => {
       res.status(500).json({ message: 'Something went wrong', error });
   }
 });
+
+router.delete('/user/:id', verifyToken,async (req, res) => {
+  try {
+      const user = await userRegister.findByIdAndDelete(req.params.id);
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+      res.json({ message: 'User deleted' ,user});
+  } catch (err) {
+      res.status(500).json({ message: err.message });
+  }
+});
 module.exports = router;
 
 

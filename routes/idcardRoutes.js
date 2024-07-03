@@ -83,6 +83,45 @@ router.get('/getidcardbyEmail',verifyToken,async(req,res)=>{
         res.status(500).json({ error: err.message });
       }
 });
+router.get('/idcard', verifyToken,async(req,res)=>{
+  try{
+    const { email, name, rollno } = req.user;
+      const users = await Signup.findOne({email});
+      if(!users){
+        return res.status(404).send('User not registered');
+      }
+      if (users.role === 'student') {
+        const user = await UserSubject.findOne({ userEmail: email });
+        if (!user) {
+          return res.status(404).send('User is not enrolled');
+        }
+        console.log('User subjects:', user.subjects);
+        const subjectNames = user.subjects.map(subject => subject.name);
+        const subject = await Enrollment.findOne({ 'subjects.name': { $in: subjectNames } });
+        if (!subject) {
+          return res.status(404).send('Subject not found');
+        }
+        // Ensure the subjects match exactly
+      const userSubjects = new Set(subjectNames);
+      const enrollmentSubjects = new Set(subject.subjects.map(subject => subject.name));
+
+      const isSubjectMatch = [...userSubjects].every(subject => enrollmentSubjects.has(subject));
+
+      if (!isSubjectMatch) {
+        return res.status(404).send('Subject mismatch');
+      }
+      const currentDate = new Date();
+      const fourYearsLater = new Date(currentDate.setFullYear(currentDate.getFullYear() + 4));
+      const formattedDate = fourYearsLater.toDateString(); // Format as 'Fri Jun 07 2028'
+      const data=[{Name:name, Rollno:rollno, Semester:subject.semester, Department: subject.department, ValidUntil:formattedDate}];
+      res.status(200).json({ message: 'Requested for ID-card', data});
+      }else {
+        res.status(403).json({ message: 'This user cannot report for ID card' });
+      }
+  }catch(error){
+    res.status(500).send({message:"Internal server error!",error:error.message });
+  }
+});
 
 router.put('/IDCardUpdate/:id', async (req, res) => {
     try {

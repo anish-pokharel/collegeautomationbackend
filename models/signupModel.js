@@ -18,6 +18,7 @@ const RegisterSchema= new mongoose.Schema({
         enum:['student','faculty','secretary','admin'],
         default:'student'
     },
+    registereddate:{ type: String },
     isVerified:{ type:Boolean, required:true }
 })
 const Register = mongoose.model('register',RegisterSchema)

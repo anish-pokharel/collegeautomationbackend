@@ -82,12 +82,13 @@ router.post('/signin', async (req, res) => {
     try {
         const { email, password } = req.body;
         const userData = await userRegister.findOne({ email });
-
-
         if (!userData) {
             console.log(error);
             return res.json({ message: 'username is not found ' });
         }
+        // if(userData.isVerified !=true){
+        //   return res.json({ message: 'User is not verified. Please verify before login! ',userData });
+        // }
         const userPasswordMatch = password === userData.password;
         if (!userPasswordMatch) {
             console.log('password doesnot match ');

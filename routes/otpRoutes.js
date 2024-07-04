@@ -3,6 +3,7 @@ const router = express.Router();
 // const Student = require('../models/otpModel')
 const Student = require('../models/otpModel');
 const nodemailer = require('nodemailer');
+const verifyToken= require('../middleware');
 
 function haversineDistance(coords1, coords2) {
     function toRad(x) {
@@ -79,7 +80,7 @@ async function sendOtp(email, otp, date) {
 //     }
 // });
 
-router.post('/verify-otp', async (req, res) => {
+router.post('/verify-otp', verifyToken, async (req, res) => {
     const { email, otp, location } = req.body;
     const currentDate = new Date();
     const formattedDate = currentDate.toDateString();
@@ -108,15 +109,28 @@ router.post('/verify-otp', async (req, res) => {
     }
 });
 
-router.get('/attendance',  async (req, res) => {
+router.get('/attendance', verifyToken, async(req,res)=>{
+    const attendance = await Student.find();
+
+    return res.status(200).json({ attendance});
+})
+
+router.get('/getattendancebydate', verifyToken, async (req, res) => {
     try {
+        const currentDate = new Date();
+        const formattedDate = currentDate.toDateString();
         const attendance = await Student.find();
-        res.json({ attendance });
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching attendance list', error });
+        const todayAttendance = attendance.filter(student => student.date === formattedDate);
+
+        if (todayAttendance.length === 0) {
+            return res.status(404).send('There is no attendance for today!');
+        }
+        return res.status(200).json({ attendance:todayAttendance });
+    }catch (error) {
+        return res.status(500).json({ message: 'Error fetching attendance list', error });
     }
 });
-router.post('/send-otp', async (req, res) => {
+router.post('/send-otp', verifyToken,async (req, res) => {
     const currentDate = new Date();
     const formattedDate = currentDate.toDateString(); // Format as 'Fri Jun 07 2024'
 
@@ -133,8 +147,8 @@ router.post('/send-otp', async (req, res) => {
             latitude: location.latitude,
             longitude: location.longitude
         });
-        await sendOtp(email, otp, formattedDate, location);
         await student.save();
+        await sendOtp(email, otp, formattedDate, location);
         res.status(200).send('OTP sent');
 
     } catch (err) {
@@ -143,5 +157,19 @@ router.post('/send-otp', async (req, res) => {
     }
 });
 
+router.get('/getattendancebyemail', verifyToken,  async (req, res) => {
+    try {
+        const { email }=req.user;
+        console.log(email);
+        const attendance = await Student.find({email:email});
+        if(!attendance){
+            return res.status(200).send('No attendance for this user');
+        }
+        console.log(attendance.email);
+        return res.status(200).json({ attendance });
+    } catch (error) {
+        return res.status(500).json({ message: 'Error fetching attendance list', error:error.message });
+    }
+});
 
 module.exports = router;

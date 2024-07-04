@@ -95,7 +95,7 @@ router.get('/idcard', verifyToken,async(req,res)=>{
         if (!user) {
           return res.status(404).send('User is not enrolled');
         }
-        console.log('User subjects:', user.subjects);
+        //console.log('User subjects:', user.subjects);
         const subjectNames = user.subjects.map(subject => subject.name);
         const subject = await Enrollment.findOne({ 'subjects.name': { $in: subjectNames } });
         if (!subject) {
@@ -110,16 +110,25 @@ router.get('/idcard', verifyToken,async(req,res)=>{
       if (!isSubjectMatch) {
         return res.status(404).send('Subject mismatch');
       }
-      const currentDate = new Date();
-      const fourYearsLater = new Date(currentDate.setFullYear(currentDate.getFullYear() + 4));
+      const registeredDate = new Date(users.registereddate);
+      const fourYearsLater = new Date(registeredDate.setFullYear(registeredDate.getFullYear() + 4));
       const formattedDate = fourYearsLater.toDateString(); // Format as 'Fri Jun 07 2028'
-      const data=[{Name:name, Rollno:rollno, Semester:subject.semester, Department: subject.department, ValidUntil:formattedDate}];
-      res.status(200).json({ message: 'Requested for ID-card', data});
+      
+      const data = [
+        { 
+          Name: name, 
+          Rollno: rollno, 
+          Semester: subject.semester, 
+          Department: subject.department, 
+          ValidUntil: formattedDate 
+        }
+      ];
+      return res.status(200).json({ message: 'Requested for ID-card', data});
       }else {
-        res.status(403).json({ message: 'This user cannot report for ID card' });
+        return res.status(403).json({ message: 'This user cannot report for ID card' });
       }
   }catch(error){
-    res.status(500).send({message:"Internal server error!",error:error.message });
+    return res.status(500).send({message:"Internal server error!",error:error.message });
   }
 });
 

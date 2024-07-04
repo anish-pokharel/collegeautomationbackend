@@ -36,24 +36,49 @@ router.post('/signupUser', async (req, res) => {
         if (password !== confirmPassword) {
             return res.json({ message: 'Passwords do not match' });
         }
-
-        const newUser = new userRegister({
-            name,
-            email,
-            rollno,
-            address,
-            password,
-            confirmPassword,
-            role,
-            isVerified: false  // Add a field to track email verification status
-        });
-
-        await newUser.save();
-        await sendVerificationEmail(newUser);
-
-        res.json({ message: 'Registration successful, please check your email to verify your account' });
+        const currentDate = new Date();
+        const formattedDate = currentDate.toDateString(); // Format as 'Fri Jun 07 2024'
+        const user = await userRegister.findOne({email});
+        if(!user){
+            const newUser = new userRegister({
+                name,
+                email,
+                rollno,
+                address,
+                password,
+                confirmPassword,
+                role,
+                registereddate:formattedDate,
+                isVerified: false  // Add a field to track email verification status
+            });
+    
+            await newUser.save();
+            await sendVerificationEmail(newUser);
+    
+            return res.json({ message: 'Registration successful, please check your email to verify your account' });
+        }
+        if(user.isVerified===true){
+            return res.json({ message: 'Already registered.',user });
+        }else{
+            const newUser = await userRegister.findOneAndUpdate({email},{
+                name,
+                email,
+                rollno,
+                address,
+                password,
+                confirmPassword,
+                role,
+                registereddate:formattedDate,
+                isVerified: false  // Add a field to track email verification status
+            },{new:true});
+    
+            //await newUser.save();
+            await sendVerificationEmail(newUser);
+            return res.status(200).json({ message: 'Registration successful, please check your email to verify your account' });
+        }
+        
     } catch (error) {
-        res.json({ message: 'Something went wrong', error });
+        return res.json({ message: 'Something went wrong', error:error.message });
     }
 });
 

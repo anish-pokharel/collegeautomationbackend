@@ -4,7 +4,7 @@ const RegisterSchema= new mongoose.Schema({
     name:{type:String},
     photo:{type:String},
     email:{type:String, unique:true, required:true},
-    rollno:{type: Number, unique:true},
+    rollno: { type: Number, unique: true, sparse: true }, 
     address:{type:String},
     biography:{type:String},
     facebook:{type:String},

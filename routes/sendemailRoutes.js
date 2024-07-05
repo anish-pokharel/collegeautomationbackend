@@ -3,6 +3,7 @@ const router = express.Router();
 const userRegister = require('../models/signupModel');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
+const verifyToken= require('../middleware');
 
 const transporter = nodemailer.createTransport({
     service: 'Gmail',
@@ -29,7 +30,7 @@ function sendVerificationEmail(user) {
     return transporter.sendMail(mailOptions);
 }
 
-router.post('/signupUser', async (req, res) => {
+router.post('/signupUser', verifyToken, async (req, res) => {
     try {
         const { name, email, rollno, address, password, confirmPassword, role } = req.body;
 
@@ -101,10 +102,64 @@ router.get('/verify-signup', async (req, res) => {
 
         user.isVerified = true;
         await user.save();
-
-        res.json({ message: 'Email verification successful, you can now log in' });
+        console.log('Email verification successful, you can now log in');
+        return res.redirect('http://localhost:4200/login');
+        //return res.status(200).json({ message: 'Email verification successful, you can now log in' });
     } catch (error) {
-        res.json({ message: 'Something went wrong', error });
+        return res.status(500).json({ message: 'Something went wrong', error });
+    }
+});
+
+
+// Step 1: Request Password Reset
+router.post('/request-reset-password', async (req, res) => {
+    const { email } = req.body;
+    const user = await userRegister.findOne({ email });
+
+    if (!user) {
+        return res.status(400).json({ message: 'User not found' });
+    }
+
+    const token = jwt.sign({ email: user.email }, 'secretKey', { expiresIn: '1h' });
+    const resetUrl = `http://localhost:3200/reset-password?token=${token}`;
+
+    const mailOptions = {
+        from: 'karthikpokharel@gmail.com',
+        to: user.email,
+        subject: 'Password Reset',
+        text: `Please click the following link to reset your password: ${resetUrl}`
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return res.status(500).json({ message: 'Error sending email', error });
+        }
+        res.json({ message: 'Password reset link sent to your email' });
+    });
+});
+
+// Step 2: Reset Password using the token
+router.post('/reset-password', async (req, res) => {
+    const {  newPassword, confirmPassword } = req.body;
+    const {token }=req.query;
+    if (newPassword !== confirmPassword) {
+        return res.status(400).json({ message: 'Passwords do not match' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, 'secretKey');
+        const user = await userRegister.findOne({ email: decoded.email });
+
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid token' });
+        }
+
+        user.password = user.confirmPassword= newPassword;
+        await user.save();
+        
+        return res.json({ message: 'Password reset successful' });
+    } catch (error) {
+        return res.status(400).json({ message: 'Invalid or expired token', error });
     }
 });
 

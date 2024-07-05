@@ -1,13 +1,18 @@
 const mongoose = require('mongoose');
 
 const excelDataSchema = new mongoose.Schema({
-  name: {
+  type: {
     type: String,
-    required: false,  
+    required: true,
+    enum: ['Routine','SemesterResult']
   },
-  rollno: {
-    type: Number,
-    required: false,  
+  filePath: {
+    type: String,
+    required: true
+  },
+  uploadDate: {
+    type: Date,
+    default: Date.now
   },
 });
 

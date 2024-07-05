@@ -213,7 +213,8 @@ router.post('/reset-password', async (req, res) => {
             return res.status(400).json({ message: 'Invalid token' });
         }
 
-        user.password = user.confirmPassword= newPassword;
+        user.password = newPassword;
+        user.confirmPassword = confirmPassword;
         await user.save();
         
         return res.json({ message: 'Password reset successful' });

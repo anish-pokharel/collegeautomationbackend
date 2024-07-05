@@ -4,40 +4,24 @@ const Enrollment = require('../models/enrollmentModel')
 const UserSubjects  = require('../models/userSubjectModel')
 const verifyToken=require('../middleware')
 const Signup = require('../models/signupModel');
-const multer = require('multer');
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/'); 
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
-});
 
-const upload = multer({ storage });
-
-router.post('/enrollmentCreate', upload.array('subjects[image]', 10), async (req, res) => {
+router.post('/enrollmentCreate', async (req, res) => {
   try {
-    const { enrollmentKey, semester, department, subjects } = req.body;
-    const updatedSubjects = subjects.map((subject, index) => {
-      subject.image = req.files[index].path; // Save the file path
-      return subject;
-    });
-
+    const { enrollmentKey,semester,department, subjects } = req.body;
     const enrollment = new Enrollment({
       enrollment_key: enrollmentKey,
       semester: semester,
       department: department,
-      subjects: updatedSubjects,
+      subjects: subjects,
     });
-
     const savedEnrollment = await enrollment.save();
     res.status(201).json(savedEnrollment);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 });
+
 router.get('/enrollmentData',verifyToken, async (req, res) => {
   try {
     const enrollments = await Enrollment.find();

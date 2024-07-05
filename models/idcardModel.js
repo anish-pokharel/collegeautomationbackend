@@ -8,7 +8,8 @@ const idcardSchema= new mongoose.Schema({
     contactNo:{ type:Number, required:true},
     department: { type: String, required:true},
     validuntil:{ type: String},
-    reason:{ type: String, required:true}
+    reason:{ type: String, required:true},
+    photo:{type : String}
 })
 const IdCard = mongoose.model('IdCard', idcardSchema)
 module.exports = IdCard;

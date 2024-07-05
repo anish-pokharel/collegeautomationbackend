@@ -129,33 +129,78 @@ router.get('/getuserdata', verifyToken, async (req, res) =>{
     }
 })
 
-router.put('/userdata/:id', verifyToken,upload.single("photo"), async (req, res) => {
+// router.put('/userdata/:id', verifyToken,upload.single("photo"), async (req, res) => {
+//   try {
+//     const { address,biography,facebook,instagram,whatsapp,website }= req.body;
+//     const file = req.file;
+//     const updateData = {
+//       address,
+//       // photo:`http://localhost:3200/uploads/${file.filename}`,
+//       biography,
+//       facebook,
+//       instagram,
+//       whatsapp,
+//       website
+//     }
+//     if (file) {
+//       updateData.photo = `http://localhost:3200/uploads/${file.filename}`;
+//     }
+//       const updatedUser = await userRegister.findByIdAndUpdate(
+//         req.params.id,
+//         {$set: updateData},
+//         { new: true }
+//     );
+  
+//     res.json({ message: 'Profile updated successfully!', userdata: updatedUser });
+//   } catch (error) {
+//       res.status(500).json({ message: 'Something went wrong', error });
+//   }
+// });
+
+
+router.put('/userdata/:id', verifyToken, upload.single("photo"), async (req, res) => {
   try {
-    const { address,biography,facebook,instagram,whatsapp,website }= req.body;
+    const { address, biography, facebook, instagram, whatsapp, website } = req.body;
     const file = req.file;
-    const updateData = {
-      address,
-      // photo:`http://localhost:3200/uploads/${file.filename}`,
-      biography,
-      facebook,
-      instagram,
-      whatsapp,
-      website
+
+    const updateData = {};
+
+    if (address && address !== "") {
+      updateData.address = address;
     }
+    // Add other fields similarly
+    if (biography && biography !== "") {
+      updateData.biography = biography;
+    }
+    if (facebook && facebook !== "") {
+      updateData.facebook = facebook;
+    }
+    if (instagram && instagram !== "") {
+      updateData.instagram = instagram;
+    }
+    if (whatsapp && whatsapp !== "") {
+      updateData.whatsapp = whatsapp;
+    }
+    if (website && website !== "") {
+      updateData.website = website;
+    }
+
     if (file) {
       updateData.photo = `http://localhost:3200/uploads/${file.filename}`;
     }
-      const updatedUser = await userRegister.findByIdAndUpdate(
-        req.params.id,
-        {$set: updateData},
-        { new: true }
+
+    const updatedUser = await userRegister.findByIdAndUpdate(
+      req.params.id,
+      { $set: updateData },
+      { new: true }
     );
-  
+
     res.json({ message: 'Profile updated successfully!', userdata: updatedUser });
   } catch (error) {
-      res.status(500).json({ message: 'Something went wrong', error });
+    res.status(500).json({ message: 'Something went wrong', error });
   }
 });
+
 
 router.put('/password/:id', verifyToken, async (req, res) => {
   try {
@@ -194,6 +239,43 @@ router.delete('/user/:id', verifyToken,async (req, res) => {
       res.status(500).json({ message: err.message });
   }
 });
+
+
+// Filter students by email or roll number
+router.get('/students/search', verifyToken, async (req, res) => {
+  try {
+    const { name, rollno , email } = req.query;
+
+    // Build the query object based on the provided parameters
+    const query = {};
+    if (name) {
+      query.name = name;
+    }
+    if (email) {
+      query.email = email;
+    }
+    if (rollno) {
+      query.rollno = rollno;
+    }
+
+    // Ensure at least one parameter is provided
+    if (!name && !rollno && !email) {
+      return res.status(400).json({ message: 'At least one of name,email or roll number must be provided' });
+    }
+
+    const students = await userRegister.find(query).lean().exec();
+    if (!students || students.length === 0) {
+      return res.status(404).json({ message: 'No students found' });
+    }
+
+    res.status(200).json(students);
+  } catch (error) {
+    console.error('Error fetching students:', error);
+    res.status(500).json({ message: 'Error fetching students', error: error.message });
+  }
+});
+
+
 module.exports = router;
 
 

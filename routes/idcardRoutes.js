@@ -44,10 +44,11 @@ router.post('/postIdCard', verifyToken, async (req, res) => {
           contactNo: req.body.contactNo,
           department: subject.department,
          // department:req.body.department,
-          reason: req.body.reason
+          reason: req.body.reason,
+          photo:users.photo
         });
         await data.save();
-        res.status(200).json({ message: 'Requested for ID-card', data });
+        res.status(200).json({ message: 'Requested for ID-card replacement', data });
       } else {
         res.status(403).json({ message: 'This user cannot report for ID card' });
       }
@@ -120,7 +121,8 @@ router.get('/idcard', verifyToken,async(req,res)=>{
           Rollno: rollno, 
           Semester: subject.semester, 
           Department: subject.department, 
-          ValidUntil: formattedDate 
+          ValidUntil: formattedDate,
+          Photo: users.photo,
         }
       ];
       return res.status(200).json({ message: 'Requested for ID-card', data});

@@ -253,7 +253,41 @@ router.post('/postAnswerAssignment', verifyToken, upload.single("assignmentFile"
     }
   });
 
+// // Filter students by name, email or roll number
+// router.get('/students/search', verifyToken, async (req, res) => {
+//   try {
+//     const { name, rollno , email } = req.query;
 
+//     // Build the query object based on the provided parameters
+//     const query = {};
+//     if (name) {
+//       query.name = name;
+//     }
+//     if (email) {
+//       query.email = email;
+//     }
+//     if (rollno) {
+//       query.rollno = rollno;
+//     }
+//     // Ensure at least one parameter is provided
+//     if (!name && !rollno && !email) {
+//       return res.status(400).json({ message: 'At least one of name,email or roll number must be provided' });
+//     }
+
+//     const students = await userRegister.find(query).lean().exec();
+//     if (!students || students.length === 0) {
+//       return res.status(404).json({ message: 'No students found' });
+//     }
+//    const assignment=await answerAssignment.find(query).lean().exec();
+//    if (!assignment || assignment.length === 0) {
+//     return res.status(404).json({ message: 'No assignment found for this student' });
+//   }
+//     res.status(200).json(assignment);
+//   } catch (error) {
+//     console.error('Error fetching students:', error);
+//     res.status(500).json({ message: 'Error fetching students', error: error.message });
+//   }
+// });
 
 
   module.exports = router;

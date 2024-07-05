@@ -35,7 +35,7 @@ router.post('/addEvent', verifyToken, async (req, res) => {
 // });
 
 // Get the list of events
-router.get('/getEventList', verifyToken, async (req, res) => {
+router.get('/getEventList',async (req, res) => {
     try {
         const events = await Event.find();
 

@@ -208,20 +208,31 @@ router.put('/password/:id', verifyToken, async (req, res) => {
   try {
     const {oldpassword, password,confirmPassword}=req.body;
     const user= await userRegister.findById(req.params.id);
-  if(user.password != oldpassword){
-    return res.status(400).json({ error: 'Password did not match' });
+    const userPasswordMatch = await bcrypt.compare( oldpassword, user.password);
+  if(!userPasswordMatch){
+    return res.status(400).json({ error: 'old Password did not match' });
   }
   else{
     if(password != confirmPassword){
       return res.status(404).json({ error: 'New Password did not match' });
     }else{
-      const userData= { password,confirmPassword };
-      const updateduserdata = await userRegister.findByIdAndUpdate(
-        req.params.id,
-        userData,
-        { new: true }
-    );
-    res.json({ message: 'Password updated successfully', userdata: updateduserdata });
+          // Hash the password before saving
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedconfirmPassword = await bcrypt.hash(confirmPassword, 10);
+    // Update user's password
+    user.password = hashedPassword;
+    user.confirmPassword = hashedconfirmPassword;
+
+    // Save updated user data
+    const updatedUser = await user.save();
+
+    //   const userData= { hashedPassword,hashedconfirmPassword };
+    //   const updateduserdata = await userRegister.findByIdAndUpdate(
+    //     req.params.id,
+    //     userData,
+    //     { new: true }
+    // );
+    res.json({ message: 'Password updated successfully',  user: updatedUser });
   
     }
       }

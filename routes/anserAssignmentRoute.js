@@ -6,8 +6,8 @@ const multer = require('multer');
 const verifyToken=require('../middleware')
 const Signup = require('../models/signupModel');
 const Enrollment=require('../models/enrollmentModel');
-
-
+const UserSubjects = require('../models/userSubjectModel');
+const Students = require('../models/otpModel');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -289,6 +289,64 @@ router.post('/postAnswerAssignment', verifyToken, upload.single("assignmentFile"
 //   }
 // });
 
+
+// Function to search student data
+async function searchStudent(query) {
+  try {
+      // Destructure query to get the actual search value
+      const { email, rollno, name } = query;
+
+      // Construct search criteria based on the provided query parameter
+      const searchCriteria = {};
+      if (email) searchCriteria.email = email;
+      if (rollno) searchCriteria.rollno = rollno;
+      if (name) searchCriteria.name = name;
+
+      // Search in Register model
+      const registerData = await Signup.findOne(searchCriteria).lean();
+
+      if (!registerData) {
+          return { message: 'Student not found' };
+      }
+
+      const { email: studentEmail, rollno: studentRollno } = registerData;
+
+      // Search in Students model (attendance)
+      const attendanceData = await Students.find({ email: studentEmail }).lean();
+
+      // Search in UserSubjects model (enrolled subjects)
+      const subjectsData = await UserSubjects.findOne({ userEmail: studentEmail }).lean();
+
+      // Search in Answer_Assignment model (uploaded assignments)
+      const assignmentsData = await answerAssignment.find({ rollno: studentRollno }).lean();
+
+      return {
+          registerData,
+          attendanceData,
+          subjectsData,
+          assignmentsData
+      };
+  } catch (error) {
+      console.error('Error searching student data:', error);
+      return { message: 'Error searching student data', error };
+  }
+}
+
+// Route to search for student data
+router.post('/search-student', async (req, res) => {
+  const query = req.body;
+
+  if (!query || (!query.email && !query.rollno && !query.name)) {
+      return res.status(400).json({ message: 'Query parameter is required' });
+  }
+
+  try {
+      const result = await searchStudent(query);
+      res.json(result);
+  } catch (error) {
+      res.status(500).json({ message: 'Internal server error', error });
+  }
+});
 
   module.exports = router;
   

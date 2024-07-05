@@ -4,6 +4,7 @@ const userRegister = require('../models/signupModel');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 const verifyToken= require('../middleware');
+const bcrypt=require('bcrypt');
 
 const transporter = nodemailer.createTransport({
     service: 'Gmail',
@@ -39,18 +40,22 @@ router.post('/signupUser', verifyToken, async (req, res) => {
   
       const currentDate = new Date();
       const formattedDate = currentDate.toDateString();
+
+      // Hash the password before saving
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const hashedconfirmPassword = await bcrypt.hash(confirmPassword, 10);
       const user = await userRegister.findOne({ email });
   
-      const rollNumber = role === 'student' ? rollno : null;
+      //const rollNumber = role === 'student' ? rollno : null;
   
       if (!user) {
         const newUser = new userRegister({
           name,
           email,
-          rollno: rollNumber,
+          rollno,
           address,
-          password,
-          confirmPassword,
+          password:hashedPassword,
+          confirmPassword:hashedconfirmPassword,
           role,
           registereddate: formattedDate,
           isVerified: false
@@ -65,14 +70,14 @@ router.post('/signupUser', verifyToken, async (req, res) => {
       if (user.isVerified) {
         return res.status(409).json({ message: 'Already registered.', user });
       } else {
-        const newUser = await Register.findOneAndUpdate(
+        const newUser = await userRegister.findOneAndUpdate(
           { email },
           {
             name,
             email,
-            rollno: rollNumber,
+            rollno,
             address,
-            password,
+            password:hashedPassword,
             confirmPassword,
             role,
             registereddate: formattedDate,

@@ -4,6 +4,7 @@ const multer = require('multer');
 const userRegister = require('../models/signupModel');
 const jwt = require('jsonwebtoken');
 const verifyToken=require('../middleware');
+const bcrypt=require('bcrypt');
 
 
 const storage = multer.diskStorage({
@@ -89,7 +90,8 @@ router.post('/signin', async (req, res) => {
         if(userData.isVerified !=true){
           return res.json({ message: 'User is not verified. Please verify before login! ',userData });
         }
-        const userPasswordMatch = password === userData.password;
+        const userPasswordMatch = await bcrypt.compare(password, userData.password);
+        //const userPasswordMatch = password === userData.password;
         if (!userPasswordMatch) {
             console.log('password doesnot match ');
             return res.json({ message: 'password is incorrect' });

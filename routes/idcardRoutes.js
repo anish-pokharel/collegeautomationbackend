@@ -45,7 +45,8 @@ router.post('/postIdCard', verifyToken, async (req, res) => {
           department: subject.department,
          // department:req.body.department,
           reason: req.body.reason,
-          photo:users.photo
+          photo:users.photo,
+          isPaid:true
         });
         await data.save();
         res.status(200).json({ message: 'Requested for ID-card replacement', data });

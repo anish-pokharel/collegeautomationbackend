@@ -334,7 +334,7 @@ async function searchStudent(query) {
 
 // Route to search for student data
 router.post('/search-student', async (req, res) => {
-  const query = req.body;
+  const query = req.body.query;
 
   if (!query || (!query.email && !query.rollno && !query.name)) {
       return res.status(400).json({ message: 'Query parameter is required' });

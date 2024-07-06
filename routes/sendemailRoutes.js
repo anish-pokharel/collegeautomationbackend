@@ -202,6 +202,26 @@ router.post('/request-reset-password', async (req, res) => {
     });
 });
 
+router.get('/reset-password', async (req, res) => {
+    const { token } = req.query;
+    try {
+        const decoded = jwt.verify(token, 'secretKey');
+        const user = await userRegister.findOne({ email: decoded.email });
+
+        if (!user) {
+            console.error('Invalid token: User not found');
+            return res.status(400).json({ message: 'Invalid token: User not found' });
+        }
+
+        // Render your Angular reset password form HTML here
+        // For example, if using EJS:
+        res.render('reset-password', { token }); // Assuming 'reset-password' is your view name
+
+    } catch (error) {
+        console.error('Token verification error:', error);
+        return res.status(400).json({ message: 'Invalid or expired token', error });
+    }
+});
 // Step 2: Reset Password using the token
 router.post('/reset-password', async (req, res) => {
     const {  newPassword, confirmPassword } = req.body;
